@@ -18,17 +18,15 @@
 
     <el-row :gutter="16" class="mt-20px">
       <!-- Sensor Data Report -->
-      <el-col :xs="24" :sm="12" :lg="8" class="mb-16px">
+      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
         <el-card shadow="hover" class="task-card h-full">
           <template #header>
             <div class="flex items-center gap-10px">
-              <el-tag type="primary" effect="plain" size="small">IoT</el-tag>
               <span class="font-semibold">Sensor Data Report</span>
             </div>
           </template>
           <div class="task-desc text-sm text-gray-500 mb-16px">
-            Publishes simulated soil moisture readings for all active sensors to AWS IoT Core.
-            Scheduled every 10 minutes. Requires AWS IoT to be configured.
+            Publish mock readings to AWS IoT for all active sensors.
           </div>
           <div class="flex items-center gap-8px text-xs text-gray-400 mb-16px">
             <el-icon><Clock /></el-icon>
@@ -47,17 +45,15 @@
       </el-col>
 
       <!-- Weather Fetch -->
-      <el-col :xs="24" :sm="12" :lg="8" class="mb-16px">
+      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
         <el-card shadow="hover" class="task-card h-full">
           <template #header>
             <div class="flex items-center gap-10px">
-              <el-tag type="info" effect="plain" size="small">Weather</el-tag>
               <span class="font-semibold">Weather Data Fetch</span>
             </div>
           </template>
           <div class="task-desc text-sm text-gray-500 mb-16px">
-            Fetches and saves weather forecast data for all registered farms from the weather API.
-            Scheduled every 10 minutes.
+            Fetch and save forecasts for all farms.
           </div>
           <div class="flex items-center gap-8px text-xs text-gray-400 mb-16px">
             <el-icon><Clock /></el-icon>
@@ -76,18 +72,15 @@
       </el-col>
 
       <!-- AI Irrigation Decision -->
-      <el-col :xs="24" :sm="12" :lg="8" class="mb-16px">
+      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
         <el-card shadow="hover" class="task-card h-full">
           <template #header>
             <div class="flex items-center gap-10px">
-              <el-tag type="success" effect="plain" size="small">AI</el-tag>
               <span class="font-semibold">AI Irrigation Decision</span>
             </div>
           </template>
           <div class="task-desc text-sm text-gray-500 mb-16px">
-            Runs the AI irrigation decision engine (AWS Bedrock) for all active fields.
-            Evaluates soil moisture, weather, and crop growth stage to generate irrigation plans.
-            Scheduled every 30 minutes.
+            Run Bedrock decision engine; create irrigation plans.
           </div>
           <div class="flex items-center gap-8px text-xs text-gray-400 mb-16px">
             <el-icon><Clock /></el-icon>
@@ -106,18 +99,15 @@
       </el-col>
 
       <!-- Irrigation Plan Execution -->
-      <el-col :xs="24" :sm="12" :lg="8" class="mb-16px">
+      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
         <el-card shadow="hover" class="task-card h-full">
           <template #header>
             <div class="flex items-center gap-10px">
-              <el-tag type="warning" effect="plain" size="small">Execution</el-tag>
               <span class="font-semibold">Irrigation Plan Execution</span>
             </div>
           </template>
           <div class="task-desc text-sm text-gray-500 mb-16px">
-            Scans pending irrigation plans and dispatches MQTT commands to devices.
-            Starts PENDING plans due now, completes EXECUTING plans whose duration elapsed,
-            and checks for device faults. Scheduled every minute.
+            Dispatch PENDING plans, finish EXECUTING ones, flag faults.
           </div>
           <div class="flex items-center gap-8px text-xs text-gray-400 mb-16px">
             <el-icon><Clock /></el-icon>
@@ -136,34 +126,20 @@
       </el-col>
 
       <!-- Alert Check (Weather) -->
-      <el-col :xs="24" :sm="12" :lg="8" class="mb-16px">
+      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
         <el-card shadow="hover" class="task-card h-full">
           <template #header>
             <div class="flex items-center gap-10px">
-              <el-tag type="danger" effect="plain" size="small">Alert</el-tag>
               <span class="font-semibold">Weather Alert Detection</span>
             </div>
           </template>
           <div class="task-desc text-sm text-gray-500 mb-16px">
-            Evaluates the 3-day weather forecast for all farms and raises alerts for extreme
-            conditions (frost, heavy rain, heatwave). Triggered after every weather fetch.
-          </div>
-          <div class="flex items-center gap-8px text-xs text-gray-400 mb-16px">
-            <el-icon><Location /></el-icon>
-            <span>Farm ID (optional):</span>
-            <el-input-number
-              v-model="alertFarmId"
-              :min="1"
-              size="small"
-              placeholder="All farms"
-              class="w-120px"
-              controls-position="right"
-            />
+            Raise alerts on extreme weather (3-day window).
           </div>
           <el-button
             type="danger"
             :loading="loading.alertCheck"
-            @click="runTask('alertCheck', () => DemoApi.triggerAlertCheck(alertFarmId))"
+            @click="runTask('alertCheck', () => DemoApi.triggerAlertCheck())"
             class="w-full"
           >
             <el-icon class="mr-4px"><Bell /></el-icon>
@@ -173,17 +149,15 @@
       </el-col>
 
       <!-- Test Alerts -->
-      <el-col :xs="24" :sm="12" :lg="8" class="mb-16px">
+      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
         <el-card shadow="hover" class="task-card h-full">
           <template #header>
             <div class="flex items-center gap-10px">
-              <el-tag type="danger" effect="dark" size="small">Test</el-tag>
               <span class="font-semibold">Inject Test Alert</span>
             </div>
           </template>
           <div class="task-desc text-sm text-gray-500 mb-16px">
-            Directly inserts a test alert record into the system for UI demonstration.
-            Useful for showing the alert management workflow without real sensor data.
+            Insert a test alert record (for UI demo).
           </div>
           <div class="flex flex-col gap-8px">
             <el-button
@@ -218,17 +192,15 @@
       </el-col>
 
       <!-- Inject Test Data (sensor + weather) -->
-      <el-col :xs="24" :sm="12" :lg="8" class="mb-16px">
+      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
         <el-card shadow="hover" class="task-card h-full">
           <template #header>
             <div class="flex items-center gap-10px">
-              <el-tag type="primary" effect="dark" size="small">Inject</el-tag>
               <span class="font-semibold">Inject Test Data</span>
             </div>
           </template>
           <div class="task-desc text-sm text-gray-500 mb-16px">
-            Inject a controlled sensor reading or weather-forecast value across all ONGOING fields.
-            Use this to drive Decision Evaluation into IRRIGATE / SKIP / NO_ACTION scenarios on demand.
+            Push fixed sensor or weather values to drive scenarios.
           </div>
           <div class="flex flex-col gap-8px">
             <el-select v-model="injectType" size="small" placeholder="Select data type">
@@ -294,14 +266,12 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Clock, Upload, Cloudy, MagicStick, Odometer, Bell, Location } from '@element-plus/icons-vue'
+import { Clock, Upload, Cloudy, MagicStick, Odometer, Bell } from '@element-plus/icons-vue'
 import { DemoApi } from '@/api/agri/demo'
 
 defineOptions({ name: 'AgriDemo' })
 
 const router = useRouter()
-
-const alertFarmId = ref<number | undefined>(undefined)
 
 const loading = reactive<Record<string, boolean>>({})
 
@@ -371,6 +341,21 @@ const runInject = () => {
 .task-card :deep(.el-card__header) {
   padding: 12px 16px;
   background: #fafafa;
+}
+
+/* Pin the action button(s) to the bottom of every task card */
+.task-card {
+  display: flex;
+  flex-direction: column;
+}
+.task-card :deep(.el-card__body) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.task-card :deep(.el-card__body) > :last-child {
+  margin-top: auto;
 }
 
 .log-line:hover {

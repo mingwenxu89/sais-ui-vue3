@@ -1,33 +1,4 @@
 <template>
-  <!-- Test trigger panel -->
-  <ContentWrap class="mb-10px">
-    <div class="flex items-center gap-3 flex-wrap">
-      <span class="text-sm font-medium text-gray-600">Trigger Test Alert:</span>
-      <el-button type="warning" plain size="small" @click="triggerTest('SENSOR_ABNORMAL')"
-        v-hasPermi="['agri:alert:create']">
-        <Icon icon="ep:warning" class="mr-1" /> Sensor Abnormal
-      </el-button>
-<el-button type="danger" plain size="small" @click="triggerTest('IRRIGATION_ABNORMAL')"
-        v-hasPermi="['agri:alert:create']">
-        <Icon icon="ep:tools" class="mr-1" /> Irrigation Fault
-      </el-button>
-      <el-divider direction="vertical" />
-      <span class="text-sm font-medium text-gray-600">Real Weather Detection:</span>
-      <el-button type="primary" plain size="small" @click="injectWeather('HEAVY_RAIN')"
-        v-hasPermi="['agri:alert:create']">
-        <Icon icon="ep:pouring" class="mr-1" /> Heavy Rain
-      </el-button>
-      <el-button type="info" plain size="small" @click="injectWeather('FROST')"
-        v-hasPermi="['agri:alert:create']">
-        <Icon icon="ep:cold-drink" class="mr-1" /> Frost
-      </el-button>
-      <el-button type="danger" plain size="small" @click="injectWeather('HEATWAVE')"
-        v-hasPermi="['agri:alert:create']">
-        <Icon icon="ep:sunny" class="mr-1" /> Heatwave
-      </el-button>
-    </div>
-  </ContentWrap>
-
   <ContentWrap>
     <!-- Search toolbar -->
     <el-form class="-mb-15px" :model="queryParams" ref="queryFormRef" :inline="true" label-width="90px">
@@ -241,24 +212,6 @@ const handleExport = async () => {
   } catch {
   } finally {
     exportLoading.value = false
-  }
-}
-
-const triggerTest = async (type: string) => {
-  try {
-    await AlertApi.triggerTestAlert(type)
-    message.success(`[TEST] ${type} alert triggered`)
-    await getList()
-  } catch {}
-}
-
-const injectWeather = async (scenario: string) => {
-  try {
-    await AlertApi.injectWeather(scenario)
-    message.success(`Weather notification sent: ${scenario}`)
-    await getList()
-  } catch (e: any) {
-    message.error(`Failed: ${e?.message ?? e}`)
   }
 }
 

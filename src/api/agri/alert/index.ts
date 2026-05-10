@@ -45,12 +45,4 @@ export const AlertApi = {
   handleAlert: async (id: number, status: number) => {
     return await request.put({ url: `/agri/alert/handle`, data: { id, status } })
   },
-
-  triggerTestAlert: async (type: string, farmId?: number) => {
-    return await request.post({ url: `/agri/alert/trigger-test`, params: { type, farmId } })
-  },
-
-  injectWeather: async (scenario: string, farmId?: number) => {
-    return await request.post({ url: `/agri/alert/inject-weather`, params: { scenario, farmId } })
-  },
 }
