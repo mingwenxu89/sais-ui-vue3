@@ -23,5 +23,13 @@ export const DemoApi = {
 
   triggerTestAlert: async (type: string, farmId?: number) => {
     return await request.post({ url: `/agri/demo/trigger-test-alert`, params: { type, farmId } })
+  },
+
+  injectSensorData: async (dataType: string, value: number) => {
+    return await request.post({ url: `/agri/demo/inject-sensor-data`, params: { dataType, value } })
+  },
+
+  injectWeatherForecast: async (field: string, value: number) => {
+    return await request.post({ url: `/agri/demo/inject-weather-forecast`, params: { field, value } })
   }
 }

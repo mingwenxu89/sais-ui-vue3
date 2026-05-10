@@ -216,6 +216,50 @@
           </div>
         </el-card>
       </el-col>
+
+      <!-- Inject Test Data (sensor + weather) -->
+      <el-col :xs="24" :sm="12" :lg="8" class="mb-16px">
+        <el-card shadow="hover" class="task-card h-full">
+          <template #header>
+            <div class="flex items-center gap-10px">
+              <el-tag type="primary" effect="dark" size="small">Inject</el-tag>
+              <span class="font-semibold">Inject Test Data</span>
+            </div>
+          </template>
+          <div class="task-desc text-sm text-gray-500 mb-16px">
+            Inject a controlled sensor reading or weather-forecast value across all ONGOING fields.
+            Use this to drive Decision Evaluation into IRRIGATE / SKIP / NO_ACTION scenarios on demand.
+          </div>
+          <div class="flex flex-col gap-8px">
+            <el-select v-model="injectType" size="small" placeholder="Select data type">
+              <el-option
+                v-for="opt in injectTypeOptions"
+                :key="opt.value"
+                :label="opt.label"
+                :value="opt.value"
+              />
+            </el-select>
+            <el-input-number
+              v-model="injectValue"
+              size="small"
+              :precision="1"
+              :step="1"
+              placeholder="Value"
+              class="w-full"
+              controls-position="right"
+            />
+            <el-button
+              type="primary"
+              :loading="loading[`inject_${injectType}`]"
+              @click="runInject"
+              class="w-full"
+            >
+              <el-icon class="mr-4px"><Upload /></el-icon>
+              Inject
+            </el-button>
+          </div>
+        </el-card>
+      </el-col>
     </el-row>
 
     <!-- Execution log -->
@@ -289,6 +333,37 @@ const runTask = async (key: string, apiFn: () => Promise<any>) => {
 const runTestAlert = (type: string) => {
   const key = `testAlert_${type}`
   runTask(key, () => DemoApi.triggerTestAlert(type))
+}
+
+// ── Inject test data (sensor + weather) ────────────────────────────────────
+type InjectKind = 'sensor' | 'weather'
+interface InjectOption {
+  label: string
+  value: string
+  kind: InjectKind
+}
+const injectTypeOptions: InjectOption[] = [
+  { label: 'Soil Moisture (%)', value: 'SOIL_MOISTURE', kind: 'sensor' },
+  { label: 'Air Temperature (°C)', value: 'TEMPERATURE', kind: 'sensor' },
+  { label: 'Tomorrow Rainfall (mm)', value: 'rainfall', kind: 'weather' },
+  { label: 'Tomorrow Min Temp (°C)', value: 'tempMin', kind: 'weather' },
+  { label: 'Tomorrow Max Temp (°C)', value: 'tempMax', kind: 'weather' }
+]
+const injectType = ref<string>('SOIL_MOISTURE')
+const injectValue = ref<number | undefined>(undefined)
+
+const runInject = () => {
+  if (injectValue.value === undefined || injectValue.value === null) {
+    ElMessage.warning('Please enter a value')
+    return
+  }
+  const opt = injectTypeOptions.find(o => o.value === injectType.value)
+  if (!opt) return
+  const value = injectValue.value
+  const fn = opt.kind === 'sensor'
+    ? () => DemoApi.injectSensorData(opt.value, value)
+    : () => DemoApi.injectWeatherForecast(opt.value, value)
+  runTask(`inject_${opt.value}`, fn)
 }
 </script>
 
