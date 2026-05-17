@@ -7,70 +7,7 @@
       </template>
     </el-page-header>
 
-    <el-alert
-      class="mt-16px"
-      title="Demo Mode"
-      type="info"
-      description="This panel lets you manually fire background scheduled jobs that normally run on a timer. Each button calls the same logic the scheduler uses — results appear in the relevant management pages."
-      show-icon
-      :closable="false"
-    />
-
     <el-row :gutter="16" class="mt-20px">
-      <!-- Sensor Data Report -->
-      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
-        <el-card shadow="hover" class="task-card h-full">
-          <template #header>
-            <div class="flex items-center gap-10px">
-              <span class="font-semibold">Sensor Data Report</span>
-            </div>
-          </template>
-          <div class="task-desc text-sm text-gray-500 mb-16px">
-            Publish mock readings to AWS IoT for all active sensors.
-          </div>
-          <div class="flex items-center gap-8px text-xs text-gray-400 mb-16px">
-            <el-icon><Clock /></el-icon>
-            <span>Cron: every 10 min</span>
-          </div>
-          <el-button
-            type="primary"
-            :loading="loading.sensorReport"
-            @click="runTask('sensorReport', DemoApi.triggerSensorReport)"
-            class="w-full"
-          >
-            <el-icon class="mr-4px"><Upload /></el-icon>
-            Trigger Sensor Report
-          </el-button>
-        </el-card>
-      </el-col>
-
-      <!-- Weather Fetch -->
-      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
-        <el-card shadow="hover" class="task-card h-full">
-          <template #header>
-            <div class="flex items-center gap-10px">
-              <span class="font-semibold">Weather Data Fetch</span>
-            </div>
-          </template>
-          <div class="task-desc text-sm text-gray-500 mb-16px">
-            Fetch and save forecasts for all farms.
-          </div>
-          <div class="flex items-center gap-8px text-xs text-gray-400 mb-16px">
-            <el-icon><Clock /></el-icon>
-            <span>Cron: every 10 min</span>
-          </div>
-          <el-button
-            type="info"
-            :loading="loading.weatherFetch"
-            @click="runTask('weatherFetch', DemoApi.triggerWeatherFetch)"
-            class="w-full"
-          >
-            <el-icon class="mr-4px"><Cloudy /></el-icon>
-            Trigger Weather Fetch
-          </el-button>
-        </el-card>
-      </el-col>
-
       <!-- AI Irrigation Decision -->
       <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
         <el-card shadow="hover" class="task-card h-full">
@@ -125,29 +62,6 @@
         </el-card>
       </el-col>
 
-      <!-- Alert Check (Weather) -->
-      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
-        <el-card shadow="hover" class="task-card h-full">
-          <template #header>
-            <div class="flex items-center gap-10px">
-              <span class="font-semibold">Weather Alert Detection</span>
-            </div>
-          </template>
-          <div class="task-desc text-sm text-gray-500 mb-16px">
-            Raise alerts on extreme weather (3-day window).
-          </div>
-          <el-button
-            type="danger"
-            :loading="loading.alertCheck"
-            @click="runTask('alertCheck', () => DemoApi.triggerAlertCheck())"
-            class="w-full"
-          >
-            <el-icon class="mr-4px"><Bell /></el-icon>
-            Trigger Alert Detection
-          </el-button>
-        </el-card>
-      </el-col>
-
       <!-- Test Alerts -->
       <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
         <el-card shadow="hover" class="task-card h-full">
@@ -191,45 +105,142 @@
         </el-card>
       </el-col>
 
-      <!-- Inject Test Data (sensor + weather) -->
-      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
-        <el-card shadow="hover" class="task-card h-full">
+    </el-row>
+
+    <el-row :gutter="16" class="mt-4px">
+      <el-col :xs="24" :lg="12" class="mb-16px">
+        <el-card shadow="never">
           <template #header>
-            <div class="flex items-center gap-10px">
-              <span class="font-semibold">Inject Test Data</span>
+            <div class="flex items-center justify-between">
+              <span class="font-semibold">Periodic Random Reporting</span>
+              <el-tag :type="reportingStatus.running ? 'success' : 'info'">
+                {{ reportingStatus.running ? 'Running' : 'Stopped' }}
+              </el-tag>
             </div>
           </template>
-          <div class="task-desc text-sm text-gray-500 mb-16px">
-            Push fixed sensor or weather values to drive scenarios.
-          </div>
-          <div class="flex flex-col gap-8px">
-            <el-select v-model="injectType" size="small" placeholder="Select data type">
-              <el-option
-                v-for="opt in injectTypeOptions"
-                :key="opt.value"
-                :label="opt.label"
-                :value="opt.value"
+
+          <el-form :model="scheduleForm" label-width="130px">
+            <el-form-item label="Interval">
+              <el-input-number
+                v-model="scheduleForm.intervalSeconds"
+                :min="5"
+                :step="5"
+                controls-position="right"
+                class="!w-220px"
               />
-            </el-select>
-            <el-input-number
-              v-model="injectValue"
-              size="small"
-              :precision="1"
-              :step="1"
-              placeholder="Value"
-              class="w-full"
-              controls-position="right"
-            />
-            <el-button
-              type="primary"
-              :loading="loading[`inject_${injectType}`]"
-              @click="runInject"
-              class="w-full"
+              <span class="ml-8px text-gray-500">seconds</span>
+            </el-form-item>
+            <el-form-item label="Started At">
+              <span>{{ formatValue(reportingStatus.startedAt) }}</span>
+            </el-form-item>
+            <el-form-item label="Last Run">
+              <span>{{ formatValue(reportingStatus.lastRunAt) }}</span>
+            </el-form-item>
+            <el-form-item label="Last Result">
+              <span>
+                {{ reportingStatus.lastSuccessCount ?? 0 }} succeeded,
+                {{ reportingStatus.lastFailureCount ?? 0 }} failed
+              </span>
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                type="primary"
+                :disabled="reportingStatus.running"
+                :loading="reportingLoading.start"
+                @click="handleReportingStart"
+                v-hasPermi="['agri:sensor:query']"
+              >
+                <el-icon class="mr-4px"><VideoPlay /></el-icon>
+                Start
+              </el-button>
+              <el-button
+                type="danger"
+                plain
+                :disabled="!reportingStatus.running"
+                :loading="reportingLoading.stop"
+                @click="handleReportingStop"
+                v-hasPermi="['agri:sensor:query']"
+              >
+                <el-icon class="mr-4px"><VideoPause /></el-icon>
+                Stop
+              </el-button>
+              <el-button :loading="reportingLoading.status" @click="loadReportingStatus">
+                <el-icon class="mr-4px"><Refresh /></el-icon>
+                Refresh
+              </el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
+      </el-col>
+
+      <el-col :xs="24" :lg="12" class="mb-16px">
+        <el-card shadow="never">
+          <template #header>
+            <span class="font-semibold">Manual Single Report</span>
+          </template>
+
+          <el-form ref="manualFormRef" :model="manualForm" :rules="manualRules" label-width="90px">
+            <el-form-item label="Field" prop="fieldId">
+              <el-select
+                v-model="manualForm.fieldId"
+                filterable
+                clearable
+                class="!w-100%"
+                placeholder="Select field"
+                @change="handleFieldChange"
+              >
+                <el-option
+                  v-for="field in fieldOptions"
+                  :key="field.id"
+                  :label="field.fieldName"
+                  :value="field.id!"
+                />
+              </el-select>
+            </el-form-item>
+            <el-table
+              v-loading="reportingLoading.sensors"
+              :data="manualSensorRows"
+              border
+              class="mb-16px"
+              empty-text="Select a field to load sensors"
             >
-              <el-icon class="mr-4px"><Upload /></el-icon>
-              Inject
-            </el-button>
-          </div>
+              <el-table-column label="Sensor" min-width="140">
+                <template #default="{ row }">
+                  <div class="font-medium">{{ row.sensorCode }}</div>
+                  <div class="text-12px text-gray-400">{{ row.model || '-' }}</div>
+                </template>
+              </el-table-column>
+              <el-table-column label="Data Type" min-width="150">
+                <template #default>
+                  <span>Soil Moisture</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="Value" min-width="150">
+                <template #default="{ row }">
+                  <el-input-number
+                    v-model="row.value"
+                    :min="0"
+                    :precision="2"
+                    :step="1"
+                    controls-position="right"
+                    size="small"
+                    class="!w-130px"
+                  />
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-form-item>
+              <el-button
+                type="primary"
+                :loading="reportingLoading.manual"
+                @click="handleManualReport"
+                v-hasPermi="['agri:sensor:create']"
+              >
+                <el-icon class="mr-4px"><Upload /></el-icon>
+                Send Filled Reports
+              </el-button>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-col>
     </el-row>
@@ -263,11 +274,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { onMounted, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { Clock, Upload, Cloudy, MagicStick, Odometer, Bell } from '@element-plus/icons-vue'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import {
+  Bell,
+  Clock,
+  MagicStick,
+  Odometer,
+  Refresh,
+  Upload,
+  VideoPause,
+  VideoPlay
+} from '@element-plus/icons-vue'
 import { DemoApi } from '@/api/agri/demo'
+import { FieldApi, FieldVO } from '@/api/agri/field'
+import { SensorApi, SensorVO } from '@/api/agri/sensor'
+import {
+  SensorReportingApi,
+  SensorReportingStatusVO
+} from '@/api/agri/sensorReporting'
 
 defineOptions({ name: 'AgriDemo' })
 
@@ -305,36 +331,146 @@ const runTestAlert = (type: string) => {
   runTask(key, () => DemoApi.triggerTestAlert(type))
 }
 
-// ── Inject test data (sensor + weather) ────────────────────────────────────
-type InjectKind = 'sensor' | 'weather'
-interface InjectOption {
-  label: string
-  value: string
-  kind: InjectKind
-}
-const injectTypeOptions: InjectOption[] = [
-  { label: 'Soil Moisture (%)', value: 'SOIL_MOISTURE', kind: 'sensor' },
-  { label: 'Air Temperature (°C)', value: 'TEMPERATURE', kind: 'sensor' },
-  { label: 'Tomorrow Rainfall (mm)', value: 'rainfall', kind: 'weather' },
-  { label: 'Tomorrow Min Temp (°C)', value: 'tempMin', kind: 'weather' },
-  { label: 'Tomorrow Max Temp (°C)', value: 'tempMax', kind: 'weather' }
-]
-const injectType = ref<string>('SOIL_MOISTURE')
-const injectValue = ref<number | undefined>(undefined)
+const reportingStatus = reactive<SensorReportingStatusVO>({
+  running: false,
+  lastSuccessCount: 0,
+  lastFailureCount: 0
+})
+const reportingLoading = reactive({
+  status: false,
+  start: false,
+  stop: false,
+  manual: false,
+  sensors: false
+})
+const scheduleForm = reactive({
+  intervalSeconds: 60
+})
+const fieldOptions = ref<FieldVO[]>([])
+const manualFormRef = ref<FormInstance>()
+const manualForm = reactive({
+  fieldId: undefined as number | undefined
+})
+const manualRules = reactive<FormRules>({
+  fieldId: [{ required: true, message: 'Please select a field', trigger: 'change' }]
+})
 
-const runInject = () => {
-  if (injectValue.value === undefined || injectValue.value === null) {
-    ElMessage.warning('Please enter a value')
+interface ManualSensorRow {
+  sensorId: number
+  sensorCode?: string
+  model?: string
+  value?: number
+}
+const manualSensorRows = ref<ManualSensorRow[]>([])
+
+const applyReportingStatus = (data: SensorReportingStatusVO) => {
+  Object.assign(reportingStatus, data || { running: false })
+  if (reportingStatus.intervalSeconds) {
+    scheduleForm.intervalSeconds = reportingStatus.intervalSeconds
+  }
+}
+
+const loadReportingStatus = async () => {
+  reportingLoading.status = true
+  try {
+    applyReportingStatus(await SensorReportingApi.getStatus())
+  } finally {
+    reportingLoading.status = false
+  }
+}
+
+const loadFields = async () => {
+  const data = await FieldApi.getFieldPage({ pageNo: 1, pageSize: 200 })
+  fieldOptions.value = data.list || []
+}
+
+const loadSensors = async () => {
+  if (!manualForm.fieldId) {
+    manualSensorRows.value = []
     return
   }
-  const opt = injectTypeOptions.find(o => o.value === injectType.value)
-  if (!opt) return
-  const value = injectValue.value
-  const fn = opt.kind === 'sensor'
-    ? () => DemoApi.injectSensorData(opt.value, value)
-    : () => DemoApi.injectWeatherForecast(opt.value, value)
-  runTask(`inject_${opt.value}`, fn)
+  reportingLoading.sensors = true
+  try {
+    const data = await SensorApi.getSensorPage({
+      pageNo: 1,
+      pageSize: 200,
+      fieldId: manualForm.fieldId,
+      status: 1
+    })
+    manualSensorRows.value = (data.list || []).map((sensor: SensorVO) => ({
+      sensorId: sensor.id!,
+      sensorCode: sensor.sensorCode,
+      model: sensor.model,
+      value: undefined
+    }))
+  } finally {
+    reportingLoading.sensors = false
+  }
 }
+
+const handleFieldChange = async () => {
+  await loadSensors()
+}
+
+const handleReportingStart = async () => {
+  if (reportingStatus.running) {
+    ElMessage.warning('Please stop the current task before starting it again')
+    return
+  }
+  reportingLoading.start = true
+  try {
+    applyReportingStatus(await SensorReportingApi.start(scheduleForm.intervalSeconds))
+    ElMessage.success('Sensor reporting started')
+  } finally {
+    reportingLoading.start = false
+  }
+}
+
+const handleReportingStop = async () => {
+  reportingLoading.stop = true
+  try {
+    applyReportingStatus(await SensorReportingApi.stop())
+    ElMessage.success('Sensor reporting stopped')
+  } finally {
+    reportingLoading.stop = false
+  }
+}
+
+const handleManualReport = async () => {
+  await manualFormRef.value?.validate()
+  const filledRows = manualSensorRows.value.filter(row => row.value !== undefined && row.value !== null)
+  if (filledRows.length === 0) {
+    ElMessage.warning('Please enter at least one sensor value')
+    return
+  }
+  reportingLoading.manual = true
+  try {
+    await Promise.all(filledRows.map(row => SensorReportingApi.reportManual({
+      fieldId: manualForm.fieldId!,
+      sensorId: row.sensorId,
+      dataType: 'SOIL_MOISTURE',
+      value: row.value!
+    })))
+    ElMessage.success(`${filledRows.length} sensor reading(s) sent`)
+  } finally {
+    reportingLoading.manual = false
+  }
+}
+
+const formatValue = (value?: string) => {
+  if (!value) {
+    return '-'
+  }
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+  return date.toLocaleString()
+}
+
+onMounted(async () => {
+  await Promise.all([loadReportingStatus(), loadFields()])
+})
 </script>
 
 <style scoped>

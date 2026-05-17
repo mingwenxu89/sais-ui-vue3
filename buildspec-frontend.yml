@@ -1,0 +1,28 @@
+version: 0.2
+
+env:
+  variables:
+    FRONTEND_DIR: "sais-ui-vue3"
+    S3_BUCKET: "sais-frontend"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - npm install -g pnpm
+  pre_build:
+    commands:
+      - cd "$FRONTEND_DIR"
+      - pnpm install
+  build:
+    commands:
+      - pnpm build:prod
+  post_build:
+    commands:
+      - aws s3 sync dist/ "s3://$S3_BUCKET" --delete
+
+artifacts:
+  files:
+    - "**/*"
+  base-directory: "sais-ui-vue3/dist"
