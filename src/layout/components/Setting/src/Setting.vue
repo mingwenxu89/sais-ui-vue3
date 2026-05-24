@@ -55,30 +55,30 @@ const setHeaderTheme = (color: string) => {
   }
 }
 
-// 菜单主题相关
+// Menu theme settings
 const menuTheme = ref(appStore.getTheme.leftMenuBgColor || '')
 
 const setMenuTheme = (color: string) => {
   const primaryColor = useCssVar('--el-color-primary', document.documentElement)
   const isDarkColor = colorIsDark(color)
   const theme: Recordable = {
-    // 左侧菜单边框颜色
+    // Left menu border color
     leftMenuBorderColor: isDarkColor ? 'inherit' : '#eee',
-    // 左侧菜单背景颜色
+    // Left menu background color
     leftMenuBgColor: color,
-    // 左侧菜单浅色背景颜色
+    // Left menu light background color
     leftMenuBgLightColor: isDarkColor ? lighten(color!, 6) : color,
-    // 左侧菜单选中背景颜色
+    // Left menu active background color
     leftMenuBgActiveColor: isDarkColor
       ? 'var(--el-color-primary)'
       : hexToRGB(unref(primaryColor), 0.1),
-    // 左侧菜单收起选中背景颜色
+    // Left menu collapsed active background color
     leftMenuCollapseBgActiveColor: isDarkColor
       ? 'var(--el-color-primary)'
       : hexToRGB(unref(primaryColor), 0.1),
-    // 左侧菜单字体颜色
+    // Left menu text color
     leftMenuTextColor: isDarkColor ? '#bfcbd9' : '#333',
-    // 左侧菜单选中字体颜色
+    // Left menu active text color
     leftMenuTextActiveColor: isDarkColor ? '#fff' : 'var(--el-color-primary)',
     // logo字体颜色
     logoTitleTextColor: isDarkColor ? '#fff' : 'inherit',
@@ -133,7 +133,7 @@ const copyConfig = async () => {
       tagsViewIcon: ${appStore.getTagsViewIcon},
       // logo
       logo: ${appStore.getLogo},
-      // 菜单手风琴
+      // Menu accordion
       uniqueOpened: ${appStore.getUniqueOpened},
       // 固定header
       fixedHeader: ${appStore.getFixedHeader},
@@ -151,19 +151,19 @@ const copyConfig = async () => {
       theme: {
         // 主题色
         elColorPrimary: '${appStore.getTheme.elColorPrimary}',
-        // 左侧菜单边框颜色
+        // Left menu border color
         leftMenuBorderColor: '${appStore.getTheme.leftMenuBorderColor}',
-        // 左侧菜单背景颜色
+        // Left menu background color
         leftMenuBgColor: '${appStore.getTheme.leftMenuBgColor}',
-        // 左侧菜单浅色背景颜色
+        // Left menu light background color
         leftMenuBgLightColor: '${appStore.getTheme.leftMenuBgLightColor}',
-        // 左侧菜单选中背景颜色
+        // Left menu active background color
         leftMenuBgActiveColor: '${appStore.getTheme.leftMenuBgActiveColor}',
-        // 左侧菜单收起选中背景颜色
+        // Left menu collapsed active background color
         leftMenuCollapseBgActiveColor: '${appStore.getTheme.leftMenuCollapseBgActiveColor}',
-        // 左侧菜单字体颜色
+        // Left menu text color
         leftMenuTextColor: '${appStore.getTheme.leftMenuTextColor}',
-        // 左侧菜单选中字体颜色
+        // Left menu active text color
         leftMenuTextActiveColor: '${appStore.getTheme.leftMenuTextActiveColor}',
         // logo字体颜色
         logoTitleTextColor: '${appStore.getTheme.logoTitleTextColor}',
@@ -257,7 +257,7 @@ const clear = () => {
         @change="setHeaderTheme"
       />
 
-      <!-- 菜单主题 -->
+      <!-- Menu theme -->
       <template v-if="layout !== 'top'">
         <ElDivider>{{ t('setting.menuTheme') }}</ElDivider>
         <ColorRadioPicker

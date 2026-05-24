@@ -25,7 +25,7 @@ const { t } = useI18n()
 
  noTagsView: true          如果设置为true，则不会出现在tag中(默认 false)
 
- activeMenu: '/dashboard'  显示高亮的路由路径
+  activeMenu: '/dashboard'  route path to highlight
 
  followAuth: '/dashboard'  跟随哪个路由进行权限过滤
 
@@ -117,7 +117,7 @@ const remainingRouter: AppRouteRecordRaw[] = [
         component: () => import('@/views/system/dict/data/index.vue'),
         name: 'SystemDictData',
         meta: {
-          title: '字典数据',
+          title: 'Dict Data',
           noCache: true,
           hidden: true,
           canTo: true,

@@ -71,13 +71,13 @@ import { ElTree } from 'element-plus'
 
 defineOptions({ name: 'SystemTenantPackageForm' })
 
-const { t } = useI18n() // 国际化
-const message = useMessage() // 消息弹窗
+const { t } = useI18n() // Internationalization
+const message = useMessage() // Message popup
 
-const dialogVisible = ref(false) // 弹窗的是否展示
-const dialogTitle = ref('') // 弹窗的标题
-const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
-const formType = ref('') // 表单的类型：create - 新增；update - 修改
+const dialogVisible = ref(false) // Whether the dialog is visible
+const dialogTitle = ref('') // Dialog title
+const formLoading = ref(false) // Form loading state: 1) data loading during update; 2) submit button disabled
+const formType = ref('') // Form type: create - add; update - modify
 const formData = ref({
   id: null,
   name: null,
@@ -90,28 +90,28 @@ const formRules = reactive({
   status: [{ required: true, message: 'Status cannot be empty', trigger: 'blur' }],
   menuIds: [{ required: true, message: 'Associated menu ID cannot be empty', trigger: 'blur' }]
 })
-const formRef = ref() // 表单 Ref
-const menuOptions = ref<any[]>([]) // 树形结构数据
+const formRef = ref() // Form ref
+const menuOptions = ref<any[]>([]) // Tree structure data
 const menuExpand = ref(false) // Expand/Collapse
-const treeRef = ref<InstanceType<typeof ElTree>>() // 树组件 Ref
-const treeNodeAll = ref(false) // 全选/全不选
+const treeRef = ref<InstanceType<typeof ElTree>>() // Tree component ref
+const treeNodeAll = ref(false) // Select all/none
 
-/** 打开弹窗 */
+/** Open dialog */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
   dialogTitle.value = t('action.' + type)
   formType.value = type
   resetForm()
-  // 加载 Menu 列表。注意，必须放在前面，不然下面 setChecked 没数据节点
+  // Load the menu list first so setChecked below has data nodes
   menuOptions.value = handleTree(await MenuApi.getSimpleMenusList())
-  // 修改时，设置数据
+  // Set data during update
   if (id) {
     formLoading.value = true
     try {
       const res = await TenantPackageApi.getTenantPackage(id)
-      // 设置选中
+      // Set selected data
       formData.value = res
-      // 设置选中
+      // Set checked state
       res.menuIds.forEach((menuId: number) => {
         treeRef.value!.setChecked(menuId, true, false)
       })
@@ -120,22 +120,22 @@ const open = async (type: string, id?: number) => {
     }
   }
 }
-defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+defineExpose({ open }) // Provide the open method for opening the dialog
 
-/** 提交表单 */
-const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
+/** Submit form */
+const emit = defineEmits(['success']) // Define the success event for callbacks after successful operations
 const submitForm = async () => {
-  // 校验表单
+  // Validate form
   if (!formRef) return
   const valid = await formRef.value.validate()
   if (!valid) return
-  // 提交请求
+  // Submit request
   formLoading.value = true
   try {
     const data = formData.value as unknown as TenantPackageApi.TenantPackageVO
     data.menuIds = [
-      ...(treeRef.value!.getCheckedKeys(false) as unknown as Array<number>), // 获得当前选中节点
-      ...(treeRef.value!.getHalfCheckedKeys() as unknown as Array<number>) // 获得半选中的父节点
+      ...(treeRef.value!.getCheckedKeys(false) as unknown as Array<number>), // Get currently checked nodes
+      ...(treeRef.value!.getHalfCheckedKeys() as unknown as Array<number>) // Get half-checked parent nodes
     ]
     if (formType.value === 'create') {
       await TenantPackageApi.createTenantPackage(data)
@@ -145,19 +145,19 @@ const submitForm = async () => {
       message.success(t('common.updateSuccess'))
     }
     dialogVisible.value = false
-    // 发送操作成功的事件
+    // Emit the operation success event
     emit('success')
   } finally {
     formLoading.value = false
   }
 }
 
-/** 重置表单 */
+/** Reset form */
 const resetForm = () => {
-  // 重置选项
+  // Reset options
   treeNodeAll.value = false
   menuExpand.value = false
-  // 重置表单
+  // Reset form
   formData.value = {
     id: null,
     name: null,
@@ -169,12 +169,12 @@ const resetForm = () => {
   formRef.value?.resetFields()
 }
 
-/** 全选/全不选 */
+/** Select all/none */
 const handleCheckedTreeNodeAll = () => {
   treeRef.value!.setCheckedNodes(treeNodeAll.value ? menuOptions.value : [])
 }
 
-/** Expand/Collapse全部 */
+/** Expand/collapse all */
 const handleCheckedTreeExpand = () => {
   const nodes = treeRef.value?.store.nodesMap
   for (let node in nodes) {

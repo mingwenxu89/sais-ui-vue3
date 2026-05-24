@@ -3,9 +3,9 @@ import { hasRole } from './permission/hasRole'
 import { hasPermi } from './permission/hasPermi'
 
 /**
- * 导出指令：v-xxx
- * @methods hasRole 用户权限，用法: v-hasRole
- * @methods hasPermi 按钮权限，用法: v-hasPermi
+ * Export directives: v-xxx
+ * @methods hasRole User permission, usage: v-hasRole
+ * @methods hasPermi Button permission, usage: v-hasPermi
  */
 export const setupAuth = (app: App<Element>) => {
   hasRole(app)
@@ -13,7 +13,7 @@ export const setupAuth = (app: App<Element>) => {
 }
 
 /**
- * 导出指令：v-mountedFocus
+ * Export directive: v-mountedFocus
  */
 export const setupMountedFocus = (app: App<Element>) => {
   app.directive('mountedFocus', {

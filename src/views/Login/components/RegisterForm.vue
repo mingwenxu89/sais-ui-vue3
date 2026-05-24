@@ -120,13 +120,13 @@ const permissionStore = usePermissionStore()
 const redirect = ref<string>('')
 const loginLoading = ref(false)
 const verify = ref()
-const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字 pictureWord 文字验证码
+const captchaType = ref('blockPuzzle') // blockPuzzle slider, clickWord click text, pictureWord text captcha
 
 const getShow = computed(() => unref(getLoginState) === LoginStateEnum.REGISTER)
 
 const equalToPassword = (_rule, value, callback) => {
   if (registerData.registerForm.password !== value) {
-    callback(new Error('两次输入的密码不一致'))
+    callback(new Error('The passwords entered twice do not match'))
   } else {
     callback()
   }
@@ -134,24 +134,24 @@ const equalToPassword = (_rule, value, callback) => {
 
 const registerRules = {
   tenantName: [
-    { required: true, trigger: 'blur', message: '请输入您所属的租户' },
-    { min: 2, max: 20, message: '租户账号长度必须介于 2 和 20 之间', trigger: 'blur' }
+    { required: true, trigger: 'blur', message: 'Please enter your tenant' },
+    { min: 2, max: 20, message: 'Tenant account length must be between 2 and 20 characters', trigger: 'blur' }
   ],
   username: [
-    { required: true, trigger: 'blur', message: '请输入您的账号' },
-    { min: 4, max: 30, message: '用户账号长度必须介于 4 和 30 之间', trigger: 'blur' }
+    { required: true, trigger: 'blur', message: 'Please enter your account' },
+    { min: 4, max: 30, message: 'User account length must be between 4 and 30 characters', trigger: 'blur' }
   ],
   nickname: [
-    { required: true, trigger: 'blur', message: '请输入您的昵称' },
-    { min: 0, max: 30, message: '昵称长度必须介于 0 和 30 之间', trigger: 'blur' }
+    { required: true, trigger: 'blur', message: 'Please enter your nickname' },
+    { min: 0, max: 30, message: 'Nickname length must be between 0 and 30 characters', trigger: 'blur' }
   ],
   password: [
-    { required: true, trigger: 'blur', message: '请输入您的密码' },
-    { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' },
-    { pattern: /^[^<>"'|\\]+$/, message: '不能包含非法字符：< > " \' \\\ |', trigger: 'blur' }
+    { required: true, trigger: 'blur', message: 'Please enter your password' },
+    { min: 5, max: 20, message: 'User password length must be between 5 and 20 characters', trigger: 'blur' },
+    { pattern: /^[^<>"'|\\]+$/, message: 'Cannot contain illegal characters: < > " \' \\\ |', trigger: 'blur' }
   ],
   confirmPassword: [
-    { required: true, trigger: 'blur', message: '请再次输入您的密码' },
+    { required: true, trigger: 'blur', message: 'Please enter your password again' },
     { required: true, validator: equalToPassword, trigger: 'blur' }
   ]
 }
@@ -171,8 +171,8 @@ const registerData = reactive({
   }
 })
 
-const loading = ref() // ElLoading.service 返回的实例
-// 提交注册
+const loading = ref() // ElLoading.service instance
+// Submit registration
 const handleRegister = async (params: any) => {
   loading.value = true
   try {
@@ -196,7 +196,7 @@ const handleRegister = async (params: any) => {
     }
     loading.value = ElLoading.service({
       lock: true,
-      text: '正在加载系统中...',
+      text: 'Loading system...',
       background: 'rgba(0, 0, 0, 0.7)'
     })
 
@@ -206,7 +206,7 @@ const handleRegister = async (params: any) => {
     if (!redirect.value) {
       redirect.value = '/'
     }
-    // 判断是否为SSO登录
+    // Check whether this is SSO login
     if (redirect.value.indexOf('sso') !== -1) {
       window.location.href = window.location.href.replace('/login?redirect=', '')
     } else {
@@ -218,19 +218,19 @@ const handleRegister = async (params: any) => {
   }
 }
 
-// 获取验证码
+// Get verification code
 const getCode = async () => {
-  // 情况一，未开启：则直接注册
+  // Case 1, disabled: register directly
   if (registerData.captchaEnable === 'false') {
     await handleRegister({})
   } else {
-    // 情况二，已开启：则展示验证码；只有完成验证码的情况，才进行注册
-    // 弹出验证码
+    // Case 2, enabled: show captcha; register only after captcha is completed
+    // Show captcha
     verify.value.show()
   }
 }
 
-// 获取租户 ID
+// Get tenant ID
 const getTenantId = async () => {
   if (registerData.tenantEnable === 'true') {
     const res = await LoginApi.getTenantIdByName(registerData.registerForm.tenantName)
@@ -238,7 +238,7 @@ const getTenantId = async () => {
   }
 }
 
-// 根据域名，获得租户信息
+// Get tenant information by domain
 const getTenantByWebsite = async () => {
   if (registerData.tenantEnable === 'true') {
     const website = location.host

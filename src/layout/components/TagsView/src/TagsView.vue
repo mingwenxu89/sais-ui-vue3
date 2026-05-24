@@ -207,10 +207,10 @@ const isActive = (route: RouteLocationNormalizedLoaded): boolean => {
   return route.fullPath === unref(currentRoute).fullPath
 }
 
-// 所有右键菜单组件的元素
+// Elements for all context menu components
 const itemRefs = useTemplateRefsList<ComponentRef<typeof ContextMenu & ContextMenuExpose>>()
 
-// 右键菜单状态改变的时候
+// When context menu state changes
 const visibleChange = (visible: boolean, tagItem: RouteLocationNormalizedLoaded) => {
   if (visible) {
     for (const v of unref(itemRefs)) {

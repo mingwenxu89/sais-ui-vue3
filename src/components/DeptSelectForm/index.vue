@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="dialogVisible" title="部门选择" width="600">
+  <Dialog v-model="dialogVisible" title="Department Selection" width="600">
     <el-row v-loading="formLoading">
       <el-col :span="24">
         <ContentWrap class="h-1/1">
@@ -24,9 +24,9 @@
         type="primary"
         @click="submitForm"
       >
-        确 定
+        Confirm
       </el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button @click="dialogVisible = false">Cancel</el-button>
     </template>
   </Dialog>
 </template>
@@ -41,16 +41,16 @@ const emit = defineEmits<{
   confirm: [deptList: any[]]
 }>()
 
-const { t } = useI18n() // 国际化
-const message = useMessage() // 消息弹窗
+const { t } = useI18n() // Internationalization
+const message = useMessage() // Message popup
 
 const props = defineProps({
-  // 是否严格的遵循父子不互相关联
+  // Whether to strictly keep parent and child nodes unlinked
   checkStrictly: {
     type: Boolean,
     default: false
   },
-  // 是否支持多选
+  // Whether multiple selection is supported
   multiple: {
     type: Boolean,
     default: true
@@ -58,24 +58,24 @@ const props = defineProps({
 })
 
 const treeRef = ref()
-const deptTree = ref<Tree[]>([]) // 部门树形结构
-const selectedDeptIds = ref<number[]>([]) // 选中的部门 ID 列表
-const dialogVisible = ref(false) // 弹窗的是否展示
-const formLoading = ref(false) // 表单的加载中
+const deptTree = ref<Tree[]>([]) // Department tree structure
+const selectedDeptIds = ref<number[]>([]) // Selected department ID list
+const dialogVisible = ref(false) // Whether the dialog is visible
+const formLoading = ref(false) // Form loading state
 
-/** 打开弹窗 */
+/** Open dialog */
 const open = async (selectedList?: DeptApi.DeptVO[]) => {
   resetForm()
   formLoading.value = true
   try {
-    // 加载部门列表
+    // Load department list
     const deptData = await DeptApi.getSimpleDeptList()
     deptTree.value = handleTree(deptData)
   } finally {
     formLoading.value = false
   }
   dialogVisible.value = true
-  // 设置已选择的部门
+  // Set selected departments
   if (selectedList?.length) {
     await nextTick()
     const selectedIds = selectedList
@@ -86,21 +86,21 @@ const open = async (selectedList?: DeptApi.DeptVO[]) => {
   }
 }
 
-/** 处理选中状态变化 */
+/** Handle selected state changes */
 const handleCheck = (data: any, checked: any) => {
   selectedDeptIds.value = treeRef.value.getCheckedKeys()
   if (!props.multiple && selectedDeptIds.value.length > 1) {
-    // 单选模式下，只保留最后选择的节点
+    // In single-select mode, keep only the last selected node
     const lastSelectedId = selectedDeptIds.value[selectedDeptIds.value.length - 1]
     selectedDeptIds.value = [lastSelectedId]
     treeRef.value.setCheckedKeys([lastSelectedId])
   }
 }
 
-/** 提交选择 */
+/** Submit selection */
 const submitForm = async () => {
   try {
-    // 获取选中的完整部门数据
+    // Get complete selected department data
     const checkedNodes = treeRef.value.getCheckedNodes()
     message.success(t('common.updateSuccess'))
     dialogVisible.value = false
@@ -109,7 +109,7 @@ const submitForm = async () => {
   }
 }
 
-/** 重置表单 */
+/** Reset form */
 const resetForm = () => {
   deptTree.value = []
   selectedDeptIds.value = []
@@ -118,5 +118,5 @@ const resetForm = () => {
   }
 }
 
-defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+defineExpose({ open }) // Provide the open method for opening the dialog
 </script>

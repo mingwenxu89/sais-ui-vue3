@@ -33,7 +33,7 @@ export const usePermissionStore = defineStore('permission', {
   actions: {
     async generateRoutes(): Promise<unknown> {
       return new Promise<void>(async (resolve) => {
-        // 获得菜单列表，它在登录的时候，setUserInfoAction 方法中已经进行获取
+        // Get menu list, which has already been fetched by setUserInfoAction during login
         let res: AppCustomRouteRecordRaw[] = []
         const roleRouters = wsCache.get(CACHE_KEY.ROLE_ROUTERS)
         if (roleRouters) {
@@ -54,7 +54,7 @@ export const usePermissionStore = defineStore('permission', {
             }
           }
         ])
-        // 渲染菜单的所有路由
+        // Render all routes for the menu
         this.routers = cloneDeep(remainingRouter).concat(routerMap)
         resolve()
       })

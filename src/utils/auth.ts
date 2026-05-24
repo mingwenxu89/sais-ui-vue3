@@ -61,7 +61,7 @@ export const removeLoginForm = () => {
   wsCache.delete(CACHE_KEY.LoginForm)
 }
 
-// ========== 租户相关 ==========
+// ========== Tenant-related ==========
 
 export const getTenantId = () => {
   return wsCache.get(CACHE_KEY.TenantId)

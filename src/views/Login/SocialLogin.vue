@@ -185,7 +185,7 @@ const { push } = useRouter()
 const permissionStore = usePermissionStore()
 const loginLoading = ref(false)
 const verify = ref()
-const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字 pictureWord 文字验证码
+const captchaType = ref('blockPuzzle') // blockPuzzle slider, clickWord click text, pictureWord text captcha
 
 const getShow = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN)
 
@@ -199,7 +199,7 @@ const loginData = reactive({
   captchaEnable: import.meta.env.VITE_APP_CAPTCHA_ENABLE !== 'false',
   tenantEnable: import.meta.env.VITE_APP_TENANT_ENABLE !== 'false',
   loginForm: {
-    tenantName: '芋道源码',
+    tenantName: 'Default Tenant',
     username: 'admin',
     password: 'admin123',
     captchaVerification: '',
@@ -207,18 +207,18 @@ const loginData = reactive({
   }
 })
 
-// 获取验证码
+// Get verification code
 const getCode = async () => {
-  // 情况一，未开启：则直接登录
+  // Case 1, disabled: log in directly
   if (!loginData.captchaEnable) {
     await handleLogin({})
   } else {
-    // 情况二，已开启：则展示验证码；只有完成验证码的情况，才进行登录
-    // 弹出验证码
+    // Case 2, enabled: show captcha; log in only after captcha is completed
+    // Show captcha
     verify.value.show()
   }
 }
-//获取租户ID
+// Get tenant ID
 const getTenantId = async () => {
   if (loginData.tenantEnable) {
     const res = await LoginApi.getTenantIdByName(loginData.loginForm.tenantName)

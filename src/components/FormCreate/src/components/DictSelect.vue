@@ -1,4 +1,4 @@
-<!-- 数据字典 Select 选择器 -->
+<!-- Data dictionary Select component -->
 <template>
   <el-select v-if="selectType === 'select'" class="w-1/1" v-bind="attrs">
     <el-option
@@ -30,11 +30,11 @@ defineOptions({ name: 'DictSelect' })
 
 const attrs = useAttrs()
 
-// 接受父组件参数
+// Accept parent component parameters
 interface Props {
-  dictType: string // 字典类型
-  valueType?: 'str' | 'int' | 'bool' // 字典值类型
-  selectType?: 'select' | 'radio' | 'checkbox' // 选择器类型，下拉框 select、多选框 checkbox、单选框 radio
+  dictType: string // Dictionary type
+  valueType?: 'str' | 'int' | 'bool' // Dictionary value type
+  selectType?: 'select' | 'radio' | 'checkbox' // Selector type: select dropdown, checkbox multi-select, radio single-select
   formCreateInject?: any
 }
 
@@ -43,7 +43,7 @@ const props = withDefaults(defineProps<Props>(), {
   selectType: 'select'
 })
 
-// 获得字典配置
+// Get dictionary configuration
 const getDictOptions = computed(() => {
   switch (props.valueType) {
     case 'str':

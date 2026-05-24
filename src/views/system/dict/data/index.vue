@@ -19,14 +19,14 @@
       <el-form-item prop="label">
         <el-input
           v-model="queryParams.label"
-          placeholder="Enter字典标签"
+          placeholder="Enter Dict Label"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
       <el-form-item prop="status">
-        <el-select v-model="queryParams.status" placeholder="数据状态" clearable class="!w-240px">
+        <el-select v-model="queryParams.status" placeholder="Data Status" clearable class="!w-240px">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
             :key="dict.value"
@@ -68,7 +68,7 @@
     </el-form>
   </ContentWrap>
 
-  <!-- 列表 -->
+  <!-- List -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" @selection-change="handleRowCheckboxChange">
       <el-table-column type="selection" width="55" />
@@ -111,7 +111,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- 分页 -->
+    <!-- Pagination -->
     <Pagination
       :total="total"
       v-model:page="queryParams.pageNo"
@@ -120,7 +120,7 @@
     />
   </ContentWrap>
 
-  <!-- 表单弹窗：添加/修改 -->
+  <!-- Form dialog: add/update -->
   <DictDataForm ref="formRef" @success="getList" />
 </template>
 <script lang="ts" setup>
@@ -133,13 +133,13 @@ import DictDataForm from './DictDataForm.vue'
 
 defineOptions({ name: 'SystemDictData' })
 
-const message = useMessage() // 消息弹窗
-const { t } = useI18n() // 国际化
-const route = useRoute() // 路由
+const message = useMessage() // Message popup
+const { t } = useI18n() // Internationalization
+const route = useRoute() // Route
 
-const loading = ref(true) // 列表的加载中
-const total = ref(0) // 列表的总页数
-const list = ref([]) // 列表的数据
+const loading = ref(true) // List loading state
+const total = ref(0) // Total number of list items
+const list = ref([]) // List data
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
@@ -147,11 +147,11 @@ const queryParams = reactive({
   status: undefined,
   dictType: route.params.dictType
 })
-const queryFormRef = ref() // 搜索的表单
-const exportLoading = ref(false) // 导出的加载中
-const dictTypeList = ref<DictTypeApi.DictTypeVO[]>() // 字典类型的列表
+const queryFormRef = ref() // Search form
+const exportLoading = ref(false) // Export loading state
+const dictTypeList = ref<DictTypeApi.DictTypeVO[]>() // Dict type list
 
-/** 查询列表 */
+/** Query list */
 const getList = async () => {
   loading.value = true
   try {
@@ -163,44 +163,44 @@ const getList = async () => {
   }
 }
 
-/** 搜索按钮操作 */
+/** Search button action */
 const handleQuery = () => {
   queryParams.pageNo = 1
   getList()
 }
 
-/** 字典类型更改同时更新列表数据 */
+/** Update list data when dict type changes */
 const dictChange = (v) => {
   queryParams.dictType = v
   handleQuery()
 }
 
-/** 重置按钮操作 */
+/** Reset button action */
 const resetQuery = () => {
   queryFormRef.value.resetFields()
   handleQuery()
 }
 
-/** 添加/修改操作 */
+/** Add/update action */
 const formRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id, queryParams.dictType)
 }
 
-/** 删除按钮操作 */
+/** Delete button action */
 const handleDelete = async (id: number) => {
   try {
-    // 删除的二次确认
+    // Secondary confirmation before deletion
     await message.delConfirm()
-    // 发起删除
+    // Start deletion
     await DictDataApi.deleteDictData(id)
     message.success(t('common.delSuccess'))
-    // 刷新列表
+    // Refresh list
     await getList()
   } catch {}
 }
 
-/** 批量删除按钮操作 */
+/** Batch delete button action */
 const checkedIds = ref<number[]>([])
 const handleRowCheckboxChange = (rows: DictDataApi.DictDataVO[]) => {
   checkedIds.value = rows.map((row) => row.id)
@@ -208,36 +208,36 @@ const handleRowCheckboxChange = (rows: DictDataApi.DictDataVO[]) => {
 
 const handleDeleteBatch = async () => {
   try {
-    // 删除的二次确认
+    // Secondary confirmation before deletion
     await message.delConfirm()
-    // 发起批量删除
+    // Start batch deletion
     await DictDataApi.deleteDictDataList(checkedIds.value)
     checkedIds.value = []
     message.success(t('common.delSuccess'))
-    // 刷新列表
+    // Refresh list
     await getList()
   } catch {}
 }
 
-/** 导出按钮操作 */
+/** Export button action */
 const handleExport = async () => {
   try {
-    // 导出的二次确认
+    // Secondary confirmation before export
     await message.exportConfirm()
-    // 发起导出
+    // Start export
     exportLoading.value = true
     const data = await DictDataApi.exportDictData(queryParams)
-    download.excel(data, '字典数据.xls')
+    download.excel(data, 'dict-data.xls')
   } catch {
   } finally {
     exportLoading.value = false
   }
 }
 
-/** 初始化 **/
+/** Initialize */
 onMounted(async () => {
   await getList()
-  // 查询字典（精简)列表
+  // Query simplified dict type list
   dictTypeList.value = await DictTypeApi.getSimpleDictTypeList()
 })
 </script>

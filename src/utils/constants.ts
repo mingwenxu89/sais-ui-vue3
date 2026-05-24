@@ -1,11 +1,11 @@
 /**
  * Created by 芋道源码
  *
- * 枚举类
+ * Enum classes
  */
 
-// ========== COMMON 模块 ==========
-// 全局通用状态枚举
+// ========== COMMON Module ==========
+// Global common status enum
 export const CommonStatusEnum = {
   ENABLE: 0, // 开启
   DISABLE: 1 // 禁用
@@ -17,33 +17,33 @@ export const UserTypeEnum = {
   ADMIN: 2 // 管理员
 }
 
-// ========== SYSTEM 模块 ==========
+// ========== SYSTEM Module ==========
 /**
- * 菜单的类型枚举
+ * Menu type enum
  */
 export const SystemMenuTypeEnum = {
-  DIR: 1, // 目录
-  MENU: 2, // 菜单
-  BUTTON: 3 // 按钮
+  DIR: 1, // Directory
+  MENU: 2, // Menu
+  BUTTON: 3 // Button
 }
 
 /**
- * 角色的类型枚举
+ * Role type enum
  */
 export const SystemRoleTypeEnum = {
-  SYSTEM: 1, // 内置角色
-  CUSTOM: 2 // 自定义角色
+  SYSTEM: 1, // Built-in role
+  CUSTOM: 2 // Custom role
 }
 
 /**
- * 数据权限的范围枚举
+ * Data permission scope enum
  */
 export const SystemDataScopeEnum = {
-  ALL: 1, // 全部数据权限
-  DEPT_CUSTOM: 2, // 指定部门数据权限
-  DEPT_ONLY: 3, // 部门数据权限
-  DEPT_AND_CHILD: 4, // 部门及以下数据权限
-  DEPT_SELF: 5 // 仅本人数据权限
+  ALL: 1, // All data permission
+  DEPT_CUSTOM: 2, // Custom department data permission
+  DEPT_ONLY: 3, // Department data permission
+  DEPT_AND_CHILD: 4, // Department and child department data permission
+  DEPT_SELF: 5 // Own data only
 }
 
 /**

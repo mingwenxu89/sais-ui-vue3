@@ -94,7 +94,7 @@ const logoChange = (show: boolean) => {
   appStore.setLogo(show)
 }
 
-// 菜单手风琴
+// Menu accordion
 const uniqueOpened = ref(appStore.getUniqueOpened)
 
 const uniqueOpenedChange = (uniqueOpened: boolean) => {
@@ -122,7 +122,7 @@ const greyModeChange = (show: boolean) => {
   appStore.setGreyMode(show)
 }
 
-// 固定菜单
+// Fixed menu
 const fixedMenu = ref(appStore.getFixedMenu)
 
 const fixedMenuChange = (show: boolean) => {

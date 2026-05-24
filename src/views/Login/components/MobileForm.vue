@@ -10,7 +10,7 @@
     size="large"
   >
     <el-row class="mx-[-10px]">
-      <!-- 租户名 -->
+      <!-- Tenant name -->
       <el-col :span="24" class="px-10px">
         <el-form-item>
           <LoginFormTitle class="w-full" />
@@ -27,7 +27,7 @@
           />
         </el-form-item>
       </el-col>
-      <!-- 手机号 -->
+      <!-- Mobile number -->
       <el-col :span="24" class="px-10px">
         <el-form-item prop="mobileNumber">
           <el-input
@@ -37,7 +37,7 @@
           />
         </el-form-item>
       </el-col>
-      <!-- 验证码 -->
+      <!-- Verification code -->
       <el-col :span="24" class="px-10px">
         <el-form-item prop="code">
           <el-row :gutter="5" justify="space-between" style="width: 100%">
@@ -58,7 +58,7 @@
                     {{ t('login.getSmsCode') }}
                   </span>
                   <span v-if="mobileCodeTimer > 0" class="getMobileCode" style="cursor: pointer">
-                    {{ mobileCodeTimer }}秒后可重新获取
+                    Available again in {{ mobileCodeTimer }}s
                   </span>
                 </template>
               </el-input>
@@ -67,7 +67,7 @@
           </el-row>
         </el-form-item>
       </el-col>
-      <!-- 登录按钮 / 返回按钮 -->
+      <!-- Login button / back button -->
       <el-col :span="24" class="px-10px">
         <el-form-item>
           <XButton
@@ -133,7 +133,7 @@ const loginData = reactive({
   },
   loginForm: {
     uuid: '',
-    tenantName: '芋道源码',
+    tenantName: 'Default Tenant',
     mobileNumber: '',
     code: ''
   }
@@ -155,7 +155,7 @@ const getSmsCode = async () => {
   smsVO.smsCode.mobile = loginData.loginForm.mobileNumber
   await sendSmsCode(smsVO.smsCode).then(async () => {
     message.success(t('login.SmsSendMsg'))
-    // 设置倒计时
+    // Set countdown
     mobileCodeTimer.value = 60
     let msgTimer = setInterval(() => {
       mobileCodeTimer.value = mobileCodeTimer.value - 1
@@ -174,21 +174,21 @@ watch(
     immediate: true
   }
 )
-// 获取租户 ID
+// Get tenant ID
 const getTenantId = async () => {
   if (loginData.tenantEnable === 'true') {
     const res = await getTenantIdByName(loginData.loginForm.tenantName)
     setTenantId(res)
   }
 }
-// 登录
+// Login
 const signIn = async () => {
   await getTenantId()
   const data = await validForm()
   if (!data) return
   ElLoading.service({
     lock: true,
-    text: '正在加载系统中...',
+    text: 'Loading system...',
     background: 'rgba(0, 0, 0, 0.7)'
   })
   loginLoading.value = true

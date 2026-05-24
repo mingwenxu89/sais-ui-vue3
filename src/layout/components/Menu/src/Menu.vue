@@ -31,7 +31,7 @@ export default defineComponent({
     const permissionStore = usePermissionStore()
 
     const menuMode = computed((): 'vertical' | 'horizontal' => {
-      // 竖
+      // Vertical
       const vertical: LayoutType[] = ['classic', 'topLeft', 'cutMenu']
 
       if (vertical.includes(unref(layout))) {
@@ -62,7 +62,7 @@ export default defineComponent({
       if (props.menuSelect) {
         props.menuSelect(index)
       }
-      // 自定义事件
+      // Custom event
       if (isUrl(index)) {
         window.open(index)
       } else {
@@ -137,14 +137,14 @@ $prefix-cls: #{$namespace}-menu;
     width: 100% !important;
     border-right: none;
 
-    // 设置选中时子标题的颜色
+    // Set selected subtitle color
     .is-active {
       & > .#{$elNamespace}-sub-menu__title {
         color: var(--left-menu-text-active-color) !important;
       }
     }
 
-    // 设置子菜单悬停的高亮和背景色
+    // Set submenu hover highlight and background color
     .#{$elNamespace}-sub-menu__title,
     .#{$elNamespace}-menu-item {
       &:hover {
@@ -153,7 +153,7 @@ $prefix-cls: #{$namespace}-menu;
       }
     }
 
-    // 设置选中时的高亮背景和高亮颜色
+    // Set selected highlight background and color
     .#{$elNamespace}-menu-item.is-active {
       color: var(--left-menu-text-active-color) !important;
       background-color: var(--left-menu-bg-active-color) !important;
@@ -167,7 +167,7 @@ $prefix-cls: #{$namespace}-menu;
       position: relative;
     }
 
-    // 设置子菜单的背景颜色
+    // Set submenu background color
     .#{$elNamespace}-menu {
       .#{$elNamespace}-sub-menu__title,
       .#{$elNamespace}-menu-item:not(.is-active) {
@@ -176,7 +176,7 @@ $prefix-cls: #{$namespace}-menu;
     }
   }
 
-  // 折叠时的最小宽度
+  // Minimum width when collapsed
   :deep(.#{$elNamespace}-menu--collapse) {
     width: var(--left-menu-min-width);
 
@@ -187,7 +187,7 @@ $prefix-cls: #{$namespace}-menu;
     }
   }
 
-  // 折叠动画的时候，就需要把文字给隐藏掉
+  // Hide text during collapse animation
   :deep(.horizontal-collapse-transition) {
     // transition: 0s width ease-in-out, 0s padding-left ease-in-out, 0s padding-right ease-in-out !important;
     .#{$prefix-cls}__title {
@@ -195,7 +195,7 @@ $prefix-cls: #{$namespace}-menu;
     }
   }
 
-  // 垂直菜单
+  // Vertical menu
   &__vertical {
     :deep(.#{$elNamespace}-menu--vertical) {
       &:not(.#{$elNamespace}-menu--collapse) .#{$elNamespace}-sub-menu__title,
@@ -205,14 +205,14 @@ $prefix-cls: #{$namespace}-menu;
     }
   }
 
-  // 水平菜单
+  // Horizontal menu
   &__horizontal {
     height: calc(var(--top-tool-height)) !important;
 
     :deep(.#{$elNamespace}-menu--horizontal) {
       height: calc(var(--top-tool-height));
       border-bottom: none;
-      // 重新设置底部高亮颜色
+      // Reset bottom highlight color
       & > .#{$elNamespace}-sub-menu.is-active {
         .#{$elNamespace}-sub-menu__title {
           border-bottom-color: var(--el-color-primary) !important;
@@ -243,14 +243,14 @@ $prefix-cls: #{$namespace}-menu-popper;
 
 .#{$prefix-cls}--vertical,
 .#{$prefix-cls}--horizontal {
-  // 设置选中时子标题的颜色
+  // Set selected subtitle color
   .is-active {
     & > .el-sub-menu__title {
       color: var(--left-menu-text-active-color) !important;
     }
   }
 
-  // 设置子菜单悬停的高亮和背景色
+  // Set submenu hover highlight and background color
   .el-sub-menu__title,
   .el-menu-item {
     &:hover {
@@ -259,7 +259,7 @@ $prefix-cls: #{$namespace}-menu-popper;
     }
   }
 
-  // 设置选中时的高亮背景
+  // Set selected highlight background
   .el-menu-item.is-active {
     position: relative;
     background-color: var(--left-menu-bg-active-color) !important;

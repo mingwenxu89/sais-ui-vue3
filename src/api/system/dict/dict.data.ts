@@ -13,47 +13,47 @@ export interface DictDataVO {
   createTime: Date
 }
 
-// 查询字典数据（精简)列表
+// Query simplified dict data list
 export const getSimpleDictDataList = () => {
   return request.get({ url: '/system/dict-data/simple-list' })
 }
 
-// 查询字典数据列表
+// Query dict data list
 export const getDictDataPage = (params: PageParam) => {
   return request.get({ url: '/system/dict-data/page', params })
 }
 
-// 查询字典数据详情
+// Query dict data details
 export const getDictData = (id: number) => {
   return request.get({ url: '/system/dict-data/get?id=' + id })
 }
 
-// 根据字典类型查询字典数据
+// Query dict data by dict type
 export const getDictDataByType = (dictType: string) => {
   return request.get({ url: '/system/dict-data/type?type=' + dictType })
 }
 
-// 新增字典数据
+// Create dict data
 export const createDictData = (data: DictDataVO) => {
   return request.post({ url: '/system/dict-data/create', data })
 }
 
-// 修改字典数据
+// Update dict data
 export const updateDictData = (data: DictDataVO) => {
   return request.put({ url: '/system/dict-data/update', data })
 }
 
-// 删除字典数据
+// Delete dict data
 export const deleteDictData = (id: number) => {
   return request.delete({ url: '/system/dict-data/delete?id=' + id })
 }
 
-// 批量删除字典数据
+// Batch delete dict data
 export const deleteDictDataList = (ids: number[]) => {
   return request.delete({ url: '/system/dict-data/delete-list', params: { ids: ids.join(',') } })
 }
 
-// 导出字典数据
+// Export dict data
 export const exportDictData = (params: any) => {
   return request.download({ url: '/system/dict-data/export-excel', params })
 }

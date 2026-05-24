@@ -7,9 +7,5 @@ export const DemoApi = {
 
   triggerIrrigationExecution: async () => {
     return await request.post({ url: `/agri/demo/trigger-irrigation-execution` })
-  },
-
-  triggerTestAlert: async (type: string, farmId?: number) => {
-    return await request.post({ url: `/agri/demo/trigger-test-alert`, params: { type, farmId } })
   }
 }

@@ -60,12 +60,12 @@ export const getRawRoute = (route: RouteLocationNormalized): RouteLocationNormal
   }
 }
 
-// 后端控制路由生成
+// Backend-controlled route generation
 export const generateRoute = (routes: AppCustomRouteRecordRaw[]): AppRouteRecordRaw[] => {
   const res: AppRouteRecordRaw[] = []
   const modulesRoutesKeys = Object.keys(modules)
   for (const route of routes) {
-    // 1. 生成 meta 菜单元数据
+    // 1. Generate meta menu metadata
     const meta = {
       title: route.name,
       icon: route.icon,
@@ -76,9 +76,9 @@ export const generateRoute = (routes: AppCustomRouteRecordRaw[]): AppRouteRecord
         route.children.length > 0 &&
         (route.alwaysShow !== undefined ? route.alwaysShow : true)
     } as any
-    // 特殊逻辑：如果后端配置的 MenuDO.component 包含 ?，则表示需要传递参数
-    // 此时，我们需要解析参数，并且将参数放到 meta.query 中
-    // 这样，后续在 Vue 文件中，可以通过 const { currentRoute } = useRouter() 中，通过 meta.query 获取到参数
+    // Special logic: if the backend-configured MenuDO.component contains ?, parameters need to be passed
+    // Parse the parameters and place them into meta.query
+    // Later in Vue files, use const { currentRoute } = useRouter() and read parameters from meta.query
     if (route.component && route.component.indexOf('?') > -1) {
       const query = route.component.split('?')[1]
       route.component = route.component.split('?')[0]
@@ -135,7 +135,7 @@ export const generateRoute = (routes: AppCustomRouteRecordRaw[]): AppRouteRecord
           },
           children: [data]
         } as AppRouteRecordRaw
-        // 菜单
+        // Menu
       } else {
         // 对后端传component组件路径和不传做兼容（如果后端传component组件路径，那么path可以随便写，如果不传，component组件路径会根path保持一致）
         const index = route?.component
@@ -221,7 +221,7 @@ const promoteRouteLevel = (route: AppRouteRecordRaw) => {
   route.children = route.children?.map((item) => omit(item, 'children'))
 }
 
-// 添加所有子菜单
+// Add all submenus
 const addToChildren = (
   routes: RouteRecordNormalized[],
   children: AppRouteRecordRaw[],

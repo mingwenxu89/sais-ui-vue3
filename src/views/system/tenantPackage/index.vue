@@ -1,7 +1,7 @@
 <template>
-  <!-- <doc-alert title="SaaS 多租户" url="https://doc.iocoder.cn/saas-tenant/" /> -->
+  <!-- <doc-alert title="SaaS Multi-Tenant" url="https://doc.iocoder.cn/saas-tenant/" /> -->
 
-  <!-- 搜索 -->
+  <!-- Search -->
   <ContentWrap>
     <el-form
       class="-mb-15px"
@@ -64,7 +64,7 @@
     </el-form>
   </ContentWrap>
 
-  <!-- 列表 -->
+  <!-- List -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" @selection-change="handleRowCheckboxChange">
       <el-table-column type="selection" width="55" />
@@ -103,7 +103,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- 分页 -->
+    <!-- Pagination -->
     <Pagination
       :total="total"
       v-model:page="queryParams.pageNo"
@@ -112,7 +112,7 @@
     />
   </ContentWrap>
 
-  <!-- 表单弹窗：添加/修改 -->
+  <!-- Form dialog: add/update -->
   <TenantPackageForm ref="formRef" @success="getList" />
 </template>
 <script lang="ts" setup>
@@ -123,12 +123,12 @@ import TenantPackageForm from './TenantPackageForm.vue'
 
 defineOptions({ name: 'SystemTenantPackage' })
 
-const message = useMessage() // 消息弹窗
-const { t } = useI18n() // 国际化
+const message = useMessage() // Message popup
+const { t } = useI18n() // Internationalization
 
-const loading = ref(true) // 列表的加载中
-const total = ref(0) // 列表的总页数
-const list = ref([]) // 列表的数据
+const loading = ref(true) // List loading state
+const total = ref(0) // Total number of list items
+const list = ref([]) // List data
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
@@ -137,9 +137,9 @@ const queryParams = reactive({
   remark: undefined,
   createTime: []
 })
-const queryFormRef = ref() // 搜索的表单
+const queryFormRef = ref() // Search form
 
-/** 查询列表 */
+/** Query list */
 const getList = async () => {
   loading.value = true
   try {
@@ -151,38 +151,38 @@ const getList = async () => {
   }
 }
 
-/** 搜索按钮操作 */
+/** Search button action */
 const handleQuery = () => {
   queryParams.pageNo = 1
   getList()
 }
 
-/** 重置按钮操作 */
+/** Reset button action */
 const resetQuery = () => {
   queryFormRef.value?.resetFields()
   getList()
 }
 
-/** 添加/修改操作 */
+/** Add/update action */
 const formRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
 
-/** 删除按钮操作 */
+/** Delete button action */
 const handleDelete = async (id: number) => {
   try {
-    // 删除的二次确认
+    // Secondary confirmation before deletion
     await message.delConfirm()
-    // 发起删除
+    // Start deletion
     await TenantPackageApi.deleteTenantPackage(id)
     message.success(t('common.delSuccess'))
-    // 刷新列表
+    // Refresh list
     await getList()
   } catch {}
 }
 
-/** 批量删除按钮操作 */
+/** Batch delete button action */
 const checkedIds = ref<number[]>([])
 const handleRowCheckboxChange = (rows: TenantPackageApi.TenantPackageVO[]) => {
   checkedIds.value = rows.map((row) => row.id)
@@ -190,18 +190,18 @@ const handleRowCheckboxChange = (rows: TenantPackageApi.TenantPackageVO[]) => {
 
 const handleDeleteBatch = async () => {
   try {
-    // 删除的二次确认
+    // Secondary confirmation before deletion
     await message.delConfirm()
-    // 发起批量删除
+    // Start batch deletion
     await TenantPackageApi.deleteTenantPackageList(checkedIds.value)
     checkedIds.value = []
     message.success(t('common.delSuccess'))
-    // 刷新列表
+    // Refresh list
     await getList()
   } catch {}
 }
 
-/** 初始化 **/
+/** Initialize */
 onMounted(() => {
   getList()
 })

@@ -1,17 +1,17 @@
 <template>
-  <!-- <doc-alert title="用户体系" url="https://doc.iocoder.cn/user-center/" />
-  <doc-alert title="三方登陆" url="https://doc.iocoder.cn/social-user/" />
-  <doc-alert title="Excel 导入导出" url="https://doc.iocoder.cn/excel-import-and-export/" /> -->
+  <!-- <doc-alert title="User System" url="https://doc.iocoder.cn/user-center/" />
+  <doc-alert title="Social Login" url="https://doc.iocoder.cn/social-user/" />
+  <doc-alert title="Excel Import and Export" url="https://doc.iocoder.cn/excel-import-and-export/" /> -->
 
   <el-row :gutter="20">
-    <!-- 左侧部门树 -->
+    <!-- Department tree -->
     <el-col :span="4" :xs="24">
       <ContentWrap class="h-1/1">
         <DeptTree @node-click="handleDeptNodeClick" />
       </ContentWrap>
     </el-col>
     <el-col :span="20" :xs="24">
-      <!-- 搜索 -->
+      <!-- Search -->
       <ContentWrap>
         <el-form
           class="-mb-15px"
@@ -197,11 +197,11 @@
     </el-col>
   </el-row>
 
-  <!-- 添加或修改用户对话框 -->
+  <!-- Add or edit user dialog -->
   <UserForm ref="formRef" @success="getList" />
-  <!-- 用户导入对话框 -->
+  <!-- User import dialog -->
   <UserImportForm ref="importFormRef" @success="getList" />
-  <!-- 分配角色 -->
+  <!-- Assign roles -->
   <UserAssignRoleForm ref="assignRoleFormRef" @success="getList" />
 </template>
 <script lang="ts" setup>
@@ -218,12 +218,12 @@ import DeptTree from './DeptTree.vue'
 
 defineOptions({ name: 'SystemUser' })
 
-const message = useMessage() // 消息弹窗
-const { t } = useI18n() // 国际化
+const message = useMessage() // Message popup
+const { t } = useI18n() // I18n
 
-const loading = ref(true) // 列表的加载中
-const total = ref(0) // 列表的总页数
-const list = ref([]) // 列表的数
+const loading = ref(true) // List loading state
+const total = ref(0) // Total list count
+const list = ref([]) // List data
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
@@ -233,9 +233,9 @@ const queryParams = reactive({
   deptId: undefined,
   createTime: []
 })
-const queryFormRef = ref() // 搜索的表单
+const queryFormRef = ref() // Search form
 
-/** 查询列表 */
+/** Query list */
 const getList = async () => {
   loading.value = true
   try {
@@ -247,19 +247,19 @@ const getList = async () => {
   }
 }
 
-/** 搜索按钮操作 */
+/** Search button action */
 const handleQuery = () => {
   queryParams.pageNo = 1
   getList()
 }
 
-/** 重置按钮操作 */
+/** Reset button action */
 const resetQuery = () => {
   queryFormRef.value?.resetFields()
   handleQuery()
 }
 
-/** 处理部门被点击 */
+/** Handle department node click */
 const handleDeptNodeClick = async (row: any) => {
   if (row === undefined) {
     queryParams.deptId = undefined
@@ -270,52 +270,52 @@ const handleDeptNodeClick = async (row: any) => {
   }
 }
 
-/** 添加/修改操作 */
+/** Add/Edit action */
 const formRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
 
-/** 用户导入 */
+/** User import */
 const importFormRef = ref()
 const handleImport = () => {
   importFormRef.value.open()
 }
 
-/** 修改用户状态 */
+/** Change user status */
 const handleStatusChange = async (row: UserApi.UserVO) => {
   try {
-    // 修改状态的二次确认
+    // Confirm status change
     const text = row.status === CommonStatusEnum.ENABLE ? 'Enable' : 'Disable'
     await message.confirm('Are you sure to "' + text + '" the user "' + row.username + '"?')
-    // 发起修改状态
+    // Send status change request
     await UserApi.updateUserStatus(row.id, row.status)
-    // 刷新列表
+    // Refresh list
     await getList()
   } catch {
-    // 取消后，进行恢复按钮
+    // Restore switch state after canceling
     row.status =
       row.status === CommonStatusEnum.ENABLE ? CommonStatusEnum.DISABLE : CommonStatusEnum.ENABLE
   }
 }
 
-/** 导出按钮操作 */
+/** Export button action */
 const exportLoading = ref(false)
 const handleExport = async () => {
   try {
-    // 导出的二次确认
+    // Confirm export
     await message.exportConfirm()
-    // 发起导出
+    // Send export request
     exportLoading.value = true
     const data = await UserApi.exportUser(queryParams)
-    download.excel(data, '用户数据.xls')
+    download.excel(data, 'user-data.xls')
   } catch {
   } finally {
     exportLoading.value = false
   }
 }
 
-/** 操作分发 */
+/** Action dispatcher */
 const handleCommand = (command: string, row: UserApi.UserVO) => {
   switch (command) {
     case 'handleDelete':
@@ -332,20 +332,20 @@ const handleCommand = (command: string, row: UserApi.UserVO) => {
   }
 }
 
-/** 删除按钮操作 */
+/** Delete button action */
 const handleDelete = async (id: number) => {
   try {
-    // 删除的二次确认
+    // Confirm delete
     await message.delConfirm()
-    // 发起删除
+    // Send delete request
     await UserApi.deleteUser(id)
     message.success(t('common.delSuccess'))
-    // 刷新列表
+    // Refresh list
     await getList()
   } catch {}
 }
 
-/** 批量删除按钮操作 */
+/** Batch delete button action */
 const checkedIds = ref<number[]>([])
 const handleRowCheckboxChange = (rows: UserApi.UserVO[]) => {
   checkedIds.value = rows.map((row) => row.id)
@@ -353,39 +353,39 @@ const handleRowCheckboxChange = (rows: UserApi.UserVO[]) => {
 
 const handleDeleteBatch = async () => {
   try {
-    // 删除的二次确认
+    // Confirm delete
     await message.delConfirm()
-    // 发起批量删除
+    // Send batch delete request
     await UserApi.deleteUserList(checkedIds.value)
     checkedIds.value = []
     message.success(t('common.delSuccess'))
-    // 刷新列表
+    // Refresh list
     await getList()
   } catch {}
 }
 
-/** 重置密码 */
+/** Reset password */
 const handleResetPwd = async (row: UserApi.UserVO) => {
   try {
-    // 重置的二次确认
+    // Confirm reset
     const result = await message.prompt(
       'Enter new password for "' + row.username + '"',
       t('common.reminder')
     )
     const password = result.value
-    // 发起重置
+    // Send reset request
     await UserApi.resetUserPassword(row.id, password)
     message.success('Password changed successfully. New password: ' + password)
   } catch {}
 }
 
-/** 分配角色 */
+/** Assign roles */
 const assignRoleFormRef = ref()
 const handleRole = (row: UserApi.UserVO) => {
   assignRoleFormRef.value.open(row)
 }
 
-/** 初始化 */
+/** Initialize */
 onMounted(() => {
   getList()
 })

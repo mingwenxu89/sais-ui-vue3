@@ -12,45 +12,45 @@ import { DictTag } from '@/components/DictTag'
 import { cloneDeep, merge } from 'lodash-es'
 
 export type CrudSchema = Omit<TableColumn, 'children'> & {
-  isSearch?: boolean // 是否在查询显示
-  search?: CrudSearchParams // 查询的详细配置
-  isTable?: boolean // 是否在列表显示
-  table?: CrudTableParams // 列表的详细配置
-  isForm?: boolean // 是否在表单显示
-  form?: CrudFormParams // 表单的详细配置
-  isDetail?: boolean // 是否在详情显示
-  detail?: CrudDescriptionsParams // 详情的详细配置
+  isSearch?: boolean // Whether to display in search.
+  search?: CrudSearchParams // Detailed search configuration.
+  isTable?: boolean // Whether to display in the table.
+  table?: CrudTableParams // Detailed table configuration.
+  isForm?: boolean // Whether to display in the form.
+  form?: CrudFormParams // Detailed form configuration.
+  isDetail?: boolean // Whether to display in details.
+  detail?: CrudDescriptionsParams // Detailed detail configuration.
   children?: CrudSchema[]
-  dictType?: string // 字典类型
-  dictClass?: 'string' | 'number' | 'boolean' // 字典数据类型 string | number | boolean
+  dictType?: string // Dict type.
+  dictClass?: 'string' | 'number' | 'boolean' // Dict data type: string | number | boolean.
 }
 
 type CrudSearchParams = {
-  // 是否显示在查询项
+  // Whether to display in search items.
   show?: boolean
-  // 接口
+  // API.
   api?: () => Promise<any>
-  // 搜索字段
+  // Search field.
   field?: string
 } & Omit<FormSchema, 'field'>
 
 type CrudTableParams = {
-  // 是否显示表头
+  // Whether to display the table header.
   show?: boolean
-  // 列宽配置
+  // Column width configuration.
   width?: number | string
-  // 列是否固定在左侧或者右侧
+  // Whether the column is fixed on the left or right.
   fixed?: 'left' | 'right'
 } & Omit<FormSchema, 'field'>
 type CrudFormParams = {
-  // 是否显示表单项
+  // Whether to display the form item.
   show?: boolean
-  // 接口
+  // API.
   api?: () => Promise<any>
 } & Omit<FormSchema, 'field'>
 
 type CrudDescriptionsParams = {
-  // 是否显示表单项
+  // Whether to display the detail item.
   show?: boolean
 } & Omit<DescriptionsSchema, 'field'>
 
@@ -63,13 +63,13 @@ interface AllSchemas {
 
 const { t } = useI18n()
 
-// 过滤所有结构
+// Filter all schemas.
 export const useCrudSchemas = (
   crudSchema: CrudSchema[]
 ): {
   allSchemas: AllSchemas
 } => {
-  // 所有结构数据
+  // All schema data.
   const allSchemas = reactive<AllSchemas>({
     searchSchema: [],
     tableColumns: [],
@@ -94,20 +94,20 @@ export const useCrudSchemas = (
   }
 }
 
-// 过滤 Search 结构
+// Filter search schema.
 const filterSearchSchema = (crudSchema: CrudSchema[], allSchemas: AllSchemas): FormSchema[] => {
   const searchSchema: FormSchema[] = []
 
-  // 获取字典列表队列
+  // Get the dict list task queue.
   const searchRequestTask: Array<() => Promise<void>> = []
   eachTree(crudSchema, (schemaItem: CrudSchema) => {
-    // 判断是否显示
+    // Determine whether to display.
     if (schemaItem?.isSearch || schemaItem.search?.show) {
       let component = schemaItem?.search?.component || 'Input'
       const options: ComponentOptions[] = []
       let comonentProps: ComponentProps = {}
       if (schemaItem.dictType) {
-        const allOptions: ComponentOptions = { label: '全部', value: '' }
+        const allOptions: ComponentOptions = { label: 'All', value: '' }
         options.push(allOptions)
         getDictOptions(schemaItem.dictType).forEach((dict) => {
           options.push(dict)
@@ -118,10 +118,10 @@ const filterSearchSchema = (crudSchema: CrudSchema[], allSchemas: AllSchemas): F
         if (!schemaItem.search?.component) component = 'Select'
       }
 
-      // updated by AKing: 解决了当使用默认的dict选项时，form中事件不能触发的问题
+      // Keep form events working when default dict options are used.
       const searchSchemaItem = merge(
         {
-          // 默认为 input
+          // Defaults to input.
           component,
           ...schemaItem.search,
           field: schemaItem.field,
@@ -145,7 +145,7 @@ const filterSearchSchema = (crudSchema: CrudSchema[], allSchemas: AllSchemas): F
           }
         })
       }
-      // 删除不必要的字段
+      // Remove unnecessary fields.
       delete searchSchemaItem.show
 
       searchSchema.push(searchSchemaItem)
@@ -157,16 +157,16 @@ const filterSearchSchema = (crudSchema: CrudSchema[], allSchemas: AllSchemas): F
   return searchSchema
 }
 
-// 过滤 table 结构
+// Filter table schema.
 const filterTableSchema = (crudSchema: CrudSchema[]): TableColumn[] => {
   const tableColumns = treeMap<CrudSchema>(crudSchema, {
     conversion: (schema: CrudSchema) => {
       if (schema?.isTable !== false && schema?.table?.show !== false) {
-        // add by 芋艿：增加对 dict 字典数据的支持
+        // Add support for dict data.
         if (!schema.formatter && schema.dictType) {
           schema.formatter = (_: Recordable, __: TableColumn, cellValue: any) => {
             return h(DictTag, {
-              type: schema.dictType!, // ! 表示一定不为空
+              type: schema.dictType!, // Non-null when dictType exists.
               value: cellValue
             })
           }
@@ -179,7 +179,7 @@ const filterTableSchema = (crudSchema: CrudSchema[]): TableColumn[] => {
     }
   })
 
-  // 第一次过滤会有 undefined 所以需要二次过滤
+  // The first filter can contain undefined values, so filter again.
   return filter<TableColumn>(tableColumns as TableColumn[], (data) => {
     if (data.children === void 0) {
       delete data.children
@@ -188,15 +188,15 @@ const filterTableSchema = (crudSchema: CrudSchema[]): TableColumn[] => {
   })
 }
 
-// 过滤 form 结构
+// Filter form schema.
 const filterFormSchema = (crudSchema: CrudSchema[], allSchemas: AllSchemas): FormSchema[] => {
   const formSchema: FormSchema[] = []
 
-  // 获取字典列表队列
+  // Get the dict list task queue.
   const formRequestTask: Array<() => Promise<void>> = []
 
   eachTree(crudSchema, (schemaItem: CrudSchema) => {
-    // 判断是否显示
+    // Determine whether to display.
     if (schemaItem?.isForm !== false && schemaItem?.form?.show !== false) {
       let component = schemaItem?.form?.component || 'Input'
       let defaultValue: any = ''
@@ -229,10 +229,10 @@ const filterFormSchema = (crudSchema: CrudSchema[], allSchemas: AllSchemas): For
         if (!(schemaItem.form && schemaItem.form.component)) component = 'Select'
       }
 
-      // updated by AKing: 解决了当使用默认的dict选项时，form中事件不能触发的问题
+      // Keep form events working when default dict options are used.
       const formSchemaItem = merge(
         {
-          // 默认为 input
+          // Defaults to input.
           component,
           value: defaultValue,
           ...schemaItem.form,
@@ -259,7 +259,7 @@ const filterFormSchema = (crudSchema: CrudSchema[], allSchemas: AllSchemas): For
         })
       }
 
-      // 删除不必要的字段
+      // Remove unnecessary fields.
       delete formSchemaItem.show
 
       formSchema.push(formSchemaItem)
@@ -272,12 +272,12 @@ const filterFormSchema = (crudSchema: CrudSchema[], allSchemas: AllSchemas): For
   return formSchema
 }
 
-// 过滤 descriptions 结构
+// Filter descriptions schema.
 const filterDescriptionsSchema = (crudSchema: CrudSchema[]): DescriptionsSchema[] => {
   const descriptionsSchema: FormSchema[] = []
 
   eachTree(crudSchema, (schemaItem: CrudSchema) => {
-    // 判断是否显示
+    // Determine whether to display.
     if (schemaItem?.isDetail !== false && schemaItem.detail?.show !== false) {
       const descriptionsSchemaItem = {
         ...schemaItem.detail,
@@ -288,13 +288,13 @@ const filterDescriptionsSchema = (crudSchema: CrudSchema[]): DescriptionsSchema[
         descriptionsSchemaItem.dictType = schemaItem.dictType
       }
       if (schemaItem.detail?.dateFormat || schemaItem.formatter == 'formatDate') {
-        // 优先使用 detail 下的配置，如果没有默认为 YYYY-MM-DD HH:mm:ss
+        // Prefer the detail configuration. Defaults to YYYY-MM-DD HH:mm:ss.
         descriptionsSchemaItem.dateFormat = schemaItem?.detail?.dateFormat
           ? schemaItem?.detail?.dateFormat
           : 'YYYY-MM-DD HH:mm:ss'
       }
 
-      // 删除不必要的字段
+      // Remove unnecessary fields.
       delete descriptionsSchemaItem.show
 
       descriptionsSchema.push(descriptionsSchemaItem)
@@ -304,7 +304,7 @@ const filterDescriptionsSchema = (crudSchema: CrudSchema[]): DescriptionsSchema[
   return descriptionsSchema
 }
 
-// 给options添加国际化
+// Add internationalization to options.
 const filterOptions = (options: Recordable, labelField?: string) => {
   return options?.map((v: Recordable) => {
     if (labelField) {
@@ -316,11 +316,11 @@ const filterOptions = (options: Recordable, labelField?: string) => {
   })
 }
 
-// 将 tableColumns 指定 fields 放到最前面
+// Move the specified tableColumns field to the front.
 export const sortTableColumns = (tableColumns: TableColumn[], field: string) => {
   const fieldIndex = tableColumns.findIndex((item) => item.field === field)
   const fieldColumn = cloneDeep(tableColumns[fieldIndex])
   tableColumns.splice(fieldIndex, 1)
-  // 添加到开头
+  // Add to the front.
   tableColumns.unshift(fieldColumn)
 }

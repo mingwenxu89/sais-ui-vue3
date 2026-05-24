@@ -7,7 +7,7 @@ export interface AlertVO {
   fieldId?: number
   fieldName?: string
   irrigationPlanId?: number
-  alertType?: number   // 1=SENSOR_ABNORMAL  2=EXTREME_WEATHER  3=IRRIGATION_ABNORMAL
+  alertType?: number   // 1=SENSOR_ABNORMAL  2=EXTREME_WEATHER  3=IRRIGATION_ABNORMAL  4=CROP_WATER_RISK
   level?: number       // 1=INFO  2=WARN  3=CRITICAL
   context?: string
   status?: number      // 0=UNHANDLED  1=HANDLING  2=RESOLVED  3=IGNORED

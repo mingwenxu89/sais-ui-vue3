@@ -1,14 +1,14 @@
 <template>
   <Dialog v-model="dialogVisible" title="Assign Roles">
     <el-form ref="formRef" v-loading="formLoading" :model="formData" label-width="80px">
-      <el-form-item label="用户名称">
+      <el-form-item label="Username">
         <el-input v-model="formData.username" :disabled="true" />
       </el-form-item>
       <el-form-item label="Nickname">
         <el-input v-model="formData.nickname" :disabled="true" />
       </el-form-item>
-      <el-form-item label="角色">
-        <el-select v-model="formData.roleIds" multiple placeholder="Select角色">
+      <el-form-item label="Roles">
+        <el-select v-model="formData.roleIds" multiple placeholder="Select roles">
           <el-option v-for="item in roleList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
@@ -26,48 +26,48 @@ import * as RoleApi from '@/api/system/role'
 
 defineOptions({ name: 'SystemUserAssignRoleForm' })
 
-const { t } = useI18n() // 国际化
-const message = useMessage() // 消息弹窗
+const { t } = useI18n() // I18n
+const message = useMessage() // Message popup
 
-const dialogVisible = ref(false) // 弹窗的是否展示
-const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
+const dialogVisible = ref(false) // Whether the dialog is visible
+const formLoading = ref(false) // Form loading state: 1) loading update data; 2) disabling submit button
 const formData = ref({
   id: -1,
   nickname: '',
   username: '',
   roleIds: []
 })
-const formRef = ref() // 表单 Ref
-const roleList = ref([] as RoleApi.RoleVO[]) // 角色的列表
+const formRef = ref() // Form ref
+const roleList = ref([] as RoleApi.RoleVO[]) // Role list
 
-/** 打开弹窗 */
+/** Open dialog */
 const open = async (row: UserApi.UserVO) => {
   dialogVisible.value = true
   resetForm()
-  // 设置数据
+  // Set data
   formData.value.id = row.id
   formData.value.username = row.username
   formData.value.nickname = row.nickname
-  // 获得角色拥有的菜单集合
+  // Get the role list assigned to the user
   formLoading.value = true
   try {
     formData.value.roleIds = await PermissionApi.getUserRoleList(row.id)
   } finally {
     formLoading.value = false
   }
-  // 获得角色列表
+  // Get role list
   roleList.value = await RoleApi.getSimpleRoleList()
 }
-defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+defineExpose({ open }) // Expose open method for opening the dialog
 
-/** 提交表单 */
-const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
+/** Submit form */
+const emit = defineEmits(['success']) // Define success event for operation success callback
 const submitForm = async () => {
-  // 校验表单
+  // Validate form
   if (!formRef) return
   const valid = await formRef.value.validate()
   if (!valid) return
-  // 提交请求
+  // Submit request
   formLoading.value = true
   try {
     await PermissionApi.assignUserRole({
@@ -76,14 +76,14 @@ const submitForm = async () => {
     })
     message.success(t('common.updateSuccess'))
     dialogVisible.value = false
-    // 发送操作成功的事件
+    // Emit operation success event
     emit('success', true)
   } finally {
     formLoading.value = false
   }
 }
 
-/** 重置表单 */
+/** Reset form */
 const resetForm = () => {
   formData.value = {
     id: -1,

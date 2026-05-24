@@ -44,10 +44,6 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Simulate Fault">
-        <el-switch v-model="formData.simulateFault" />
-        <span class="ml-2 text-xs text-gray-400">Withhold device ACK to trigger IRRIGATION_ABNORMAL alert</span>
-      </el-form-item>
     </el-form>
 
     <template #footer>
@@ -82,7 +78,6 @@ const formData = ref({
   sensorId: undefined,
   flowRate: undefined,
   status: undefined,
-  simulateFault: false,
 })
 
 const formRules = reactive({
@@ -128,7 +123,6 @@ const open = async (type: string, id?: number, defaultFieldId?: number) => {
         sensorId: data.sensorId,
         flowRate: data.flowRate,
         status: data.status,
-        simulateFault: data.simulateFault ?? false,
       }
       await loadSensorOptions(data.fieldId)
     } finally {
@@ -168,7 +162,6 @@ const resetForm = () => {
     sensorId: undefined,
     flowRate: undefined,
     status: undefined,
-    simulateFault: false,
   }
   sensorList.value = []
   formRef.value?.resetFields()

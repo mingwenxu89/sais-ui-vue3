@@ -1,31 +1,31 @@
-// 左侧拖拽按钮
+// Left-side drag button.
 export interface MenuItem {
   label: string
   name: string
   icon: string
 }
 
-// 左侧拖拽按钮分类
+// Left-side drag button category.
 export interface Menu {
   title: string
   name: string
   list: MenuItem[]
 }
 
-// 通用下拉组件 Props 类型
+// Common dropdown component prop types.
 export interface ApiSelectProps {
-  name: string // 组件名称
-  labelField?: string // 选项标签
-  valueField?: string // 选项的值
-  url?: string // url 接口
-  isDict?: boolean // 是否字典选择器
+  name: string // Component name.
+  labelField?: string // Option label.
+  valueField?: string // Option value.
+  url?: string // URL API.
+  isDict?: boolean // Whether this is a dict selector.
 }
 
-// 选择组件规则配置类型
+// Select component rule configuration type.
 export interface SelectRuleOption {
-  label: string // label 名称
-  name: string // 组件名称
-  icon: string // 组件图标
-  props?: any[] // 组件规则
-  event?: any[] // 事件配置
+  label: string // Label name.
+  name: string // Component name.
+  icon: string // Component icon.
+  props?: any[] // Component rules.
+  event?: any[] // Event configuration.
 }

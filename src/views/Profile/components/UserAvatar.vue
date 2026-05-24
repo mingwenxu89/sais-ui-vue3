@@ -37,7 +37,7 @@ const handelUpload = async ({ data }) => {
   ).data
   await updateUserProfile({ avatar })
 
-  // 关闭弹窗，并更新 userStore
+  // Close dialog and update userStore
   cropperRef.value.close()
   await userStore.setUserAvatarAction(avatar)
 }

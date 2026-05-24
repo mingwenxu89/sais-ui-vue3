@@ -31,47 +31,47 @@ export interface TenantExportReqVO {
   createTime?: Date[]
 }
 
-// 查询租户列表
+// Query tenant list
 export const getTenantPage = (params: TenantPageReqVO) => {
   return request.get({ url: '/system/tenant/page', params })
 }
 
-// 查询租户详情
+// Query tenant details
 export const getTenant = (id: number) => {
   return request.get({ url: '/system/tenant/get?id=' + id })
 }
 
-// 获取租户精简信息列表
+// Get simplified tenant list
 export const getTenantList = () => {
   return request.get({ url: '/system/tenant/simple-list' })
 }
 
-// 新增租户
+// Create tenant
 export const createTenant = (data: TenantVO) => {
   return request.post({ url: '/system/tenant/create', data })
 }
 
-// 修改租户
+// Update tenant
 export const updateTenant = (data: TenantVO) => {
   return request.put({ url: '/system/tenant/update', data })
 }
 
-// 删除租户
+// Delete tenant
 export const deleteTenant = (id: number) => {
   return request.delete({ url: '/system/tenant/delete?id=' + id })
 }
 
-// 批量删除租户
+// Batch delete tenants
 export const deleteTenantList = (ids: number[]) => {
   return request.delete({ url: '/system/tenant/delete-list', params: { ids: ids.join(',') } })
 }
 
-// 导出租户
+// Export tenants
 export const exportTenant = (params: TenantExportReqVO) => {
   return request.download({ url: '/system/tenant/export-excel', params })
 }
 
-// 获得当前租户
+// Get current tenant
 export const getCurrentTenant = () => {
   return request.get({ url: '/system/tenant/get-current' })
 }

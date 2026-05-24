@@ -6,7 +6,13 @@
       </el-form-item>
 
       <el-form-item label="Model" prop="model">
-        <el-input v-model="formData.model" placeholder="Enter model" />
+        <el-select v-model="formData.model" placeholder="Select model" class="w-full" clearable>
+          <el-option label="SEN0193" value="SEN0193" />
+          <el-option
+            label="Capacitive Soil Moisture v1.2"
+            value="Capacitive Soil Moisture v1.2"
+          />
+        </el-select>
       </el-form-item>
 
       <el-form-item label="Field" prop="fieldId">
@@ -71,7 +77,7 @@ const formRules = reactive({
 
 const formRef = ref()
 
-const open = async (type: string, id?: number) => {
+const open = async (type: string, id?: number, defaultFieldId?: number) => {
   dialogVisible.value = true
   dialogTitle.value = t('action.' + type)
   formType.value = type
@@ -85,6 +91,8 @@ const open = async (type: string, id?: number) => {
     } finally {
       formLoading.value = false
     }
+  } else if (defaultFieldId) {
+    formData.value.fieldId = defaultFieldId
   }
 }
 defineExpose({ open })

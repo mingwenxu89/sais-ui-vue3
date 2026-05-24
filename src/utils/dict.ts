@@ -1,5 +1,5 @@
 /**
- * 数据字典工具类
+ * Data dictionary utility
  */
 import { useDictStoreWithOut } from '@/store/modules/dict'
 import { ElementPlusInfoType } from '@/types/elementPlus'
@@ -7,10 +7,10 @@ import { ElementPlusInfoType } from '@/types/elementPlus'
 const dictStore = useDictStoreWithOut()
 
 /**
- * 获取 dictType 对应的数据字典数组
+ * Get the data dictionary array for dictType
  *
- * @param dictType 数据类型
- * @returns {*|Array} 数据字典数组
+ * @param dictType Data type
+ * @returns {*|Array} Data dictionary array
  */
 export interface DictDataType {
   dictType: string
@@ -33,10 +33,10 @@ export const getDictOptions = (dictType: string) => {
 }
 
 export const getIntDictOptions = (dictType: string): NumberDictDataType[] => {
-  // 获得通用的 DictDataType 列表
+  // Get common DictDataType list
   const dictOptions: DictDataType[] = getDictOptions(dictType)
-  // 转换成 number 类型的 NumberDictDataType 类型
-  // why 需要特殊转换：避免 IDEA 在 v-for="dict in getIntDictOptions(...)" 时，el-option 的 key 会告警
+  // Convert to NumberDictDataType with number value
+  // why special conversion is needed: avoid IDEA warning about el-option keys in v-for="dict in getIntDictOptions(...)"
   const dictOption: NumberDictDataType[] = []
   dictOptions.forEach((dict: DictDataType) => {
     dictOption.push({
@@ -48,10 +48,10 @@ export const getIntDictOptions = (dictType: string): NumberDictDataType[] => {
 }
 
 export const getStrDictOptions = (dictType: string) => {
-  // 获得通用的 DictDataType 列表
+  // Get common DictDataType list
   const dictOptions: DictDataType[] = getDictOptions(dictType)
-  // 转换成 string 类型的 StringDictDataType 类型
-  // why 需要特殊转换：避免 IDEA 在 v-for="dict in getStrDictOptions(...)" 时，el-option 的 key 会告警
+  // Convert to StringDictDataType with string value
+  // why special conversion is needed: avoid IDEA warning about el-option keys in v-for="dict in getStrDictOptions(...)"
   const dictOption: StringDictDataType[] = []
   dictOptions.forEach((dict: DictDataType) => {
     dictOption.push({
@@ -75,10 +75,10 @@ export const getBoolDictOptions = (dictType: string) => {
 }
 
 /**
- * 获取指定字典类型的指定值对应的字典对象
- * @param dictType 字典类型
- * @param value 字典值
- * @return DictDataType 字典对象
+ * Get the dictionary object for the specified value of a dictionary type
+ * @param dictType Dictionary type
+ * @param value Dictionary value
+ * @return DictDataType Dictionary object
  */
 export const getDictObj = (dictType: string, value: any): DictDataType | undefined => {
   const dictOptions: DictDataType[] = getDictOptions(dictType)
@@ -90,11 +90,11 @@ export const getDictObj = (dictType: string, value: any): DictDataType | undefin
 }
 
 /**
- * 获得字典数据的文本展示
+ * Get text display for dictionary data
  *
- * @param dictType 字典类型
- * @param value 字典数据的值
- * @return 字典名称
+ * @param dictType Dictionary type
+ * @param value Dictionary data value
+ * @return Dictionary name
  */
 export const getDictLabel = (dictType: string, value: any): string => {
   const dictOptions: DictDataType[] = getDictOptions(dictType)
@@ -110,10 +110,10 @@ export const getDictLabel = (dictType: string, value: any): string => {
 export enum DICT_TYPE {
   USER_TYPE = 'user_type',
   COMMON_STATUS = 'common_status',
-  TERMINAL = 'terminal', // 终端
-  DATE_INTERVAL = 'date_interval', // 数据间隔
+  TERMINAL = 'terminal', // Terminal
+  DATE_INTERVAL = 'date_interval', // Data interval
 
-  // ========== SYSTEM 模块 ==========
+  // ========== SYSTEM Module ==========
   SYSTEM_USER_SEX = 'system_user_sex',
   SYSTEM_MENU_TYPE = 'system_menu_type',
   SYSTEM_ROLE_TYPE = 'system_role_type',

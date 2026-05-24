@@ -20,7 +20,7 @@ const pageLoading = computed(() => appStore.getPageLoading)
 // 标签页
 const tagsView = computed(() => appStore.getTagsView)
 
-// 菜单折叠
+// Menu collapse
 const collapse = computed(() => appStore.getCollapse)
 
 // logo
@@ -32,7 +32,7 @@ const fixedHeader = computed(() => appStore.getFixedHeader)
 // 是否是移动端
 const mobile = computed(() => appStore.getMobile)
 
-// 固定菜单
+// Fixed menu
 const fixedMenu = computed(() => appStore.getFixedMenu)
 
 export const useRenderLayout = () => {

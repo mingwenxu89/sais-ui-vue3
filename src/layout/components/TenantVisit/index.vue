@@ -20,23 +20,23 @@ import { getVisitTenantId, setVisitTenantId } from '@/utils/auth'
 import { useMessage } from '@/hooks/web/useMessage'
 import { useTagsView } from '@/hooks/web/useTagsView'
 
-const message = useMessage() // 消息弹窗
-const tagsView = useTagsView() // 标签页操作
+const message = useMessage() // Message popup
+const tagsView = useTagsView() // Tag view actions
 
-const value = ref(getVisitTenantId()) // 当前选中的租户 ID
-const tenants = ref<any[]>([]) // 租户列表
+const value = ref(getVisitTenantId()) // Currently selected tenant ID
+const tenants = ref<any[]>([]) // Tenant list
 
 const handleChange = (id: number) => {
-  // 设置访问租户 ID
+  // Set visit tenant ID
   setVisitTenantId(id)
-  // 关闭其他标签页，只保留当前页
+  // Close other tabs and keep only the current page
   tagsView.closeOther()
-  // 刷新当前页面
+  // Refresh current page
   tagsView.refreshPage()
-  // 提示切换成功
+  // Show success message
   const tenant = tenants.value.find((item) => item.id === id)
   if (tenant) {
-    message.success(`切换当前租户为: ${tenant.name}`)
+    message.success(`Current tenant switched to: ${tenant.name}`)
   }
 }
 

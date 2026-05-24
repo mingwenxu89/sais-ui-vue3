@@ -68,12 +68,12 @@ import { CommonStatusEnum } from '@/utils/constants'
 
 defineOptions({ name: 'SystemTenantForm' })
 
-const { t } = useI18n() // 国际化
-const message = useMessage() // 消息弹窗
-const dialogVisible = ref(false) // 弹窗的是否展示
-const dialogTitle = ref('') // 弹窗的标题
-const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
-const formType = ref('') // 表单的类型：create - 新增；update - 修改
+const { t } = useI18n() // Internationalization
+const message = useMessage() // Message popup
+const dialogVisible = ref(false) // Whether the dialog is visible
+const dialogTitle = ref('') // Dialog title
+const formLoading = ref(false) // Form loading state: 1) data loading during update; 2) submit button disabled
+const formType = ref('') // Form type: create - add; update - modify
 const formData = ref({
   id: undefined,
   name: undefined,
@@ -84,7 +84,7 @@ const formData = ref({
   expireTime: undefined,
   websites: [],
   status: CommonStatusEnum.ENABLE,
-  // 新增专属
+  // Create-only fields
   username: undefined,
   password: undefined
 })
@@ -96,15 +96,15 @@ const formRules = reactive({
   username: [{ required: true, message: 'Username cannot be empty', trigger: 'blur' }],
   password: [{ required: true, message: 'Password cannot be empty', trigger: 'blur' }]
 })
-const formRef = ref() // 表单 Ref
+const formRef = ref() // Form ref
 
-/** 打开弹窗 */
+/** Open dialog */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
   dialogTitle.value = t('action.' + type)
   formType.value = type
   resetForm()
-  // 修改时，设置数据
+  // Set data during update
   if (id) {
     formLoading.value = true
     try {
@@ -114,16 +114,16 @@ const open = async (type: string, id?: number) => {
     }
   }
 }
-defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+defineExpose({ open }) // Provide the open method for opening the dialog
 
-/** 提交表单 */
-const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
+/** Submit form */
+const emit = defineEmits(['success']) // Define the success event for callbacks after successful operations
 const submitForm = async () => {
-  // 校验表单
+  // Validate form
   if (!formRef) return
   const valid = await formRef.value.validate()
   if (!valid) return
-  // 提交请求
+  // Submit request
   formLoading.value = true
   try {
     const data = formData.value as unknown as TenantApi.TenantVO
@@ -135,14 +135,14 @@ const submitForm = async () => {
       message.success(t('common.updateSuccess'))
     }
     dialogVisible.value = false
-    // 发送操作成功的事件
+    // Emit the operation success event
     emit('success')
   } finally {
     formLoading.value = false
   }
 }
 
-/** 重置表单 */
+/** Reset form */
 const resetForm = () => {
   formData.value = {
     id: undefined,

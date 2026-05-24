@@ -1,118 +1,18 @@
 <template>
   <div class="demo-panel p-20px">
-    <el-page-header title="Back" @back="router.back()">
-      <template #content>
-        <span class="text-lg font-semibold">Demo Task Trigger Panel</span>
-        <span class="ml-10px text-sm text-gray-400">Manually trigger scheduled tasks for demonstration</span>
-      </template>
-    </el-page-header>
+    <div class="demo-page-title">
+      <span class="text-lg font-semibold">Demo Task Trigger Panel</span>
+      <span class="ml-10px text-sm text-gray-400">
+        Manually trigger scheduled tasks for demonstration
+      </span>
+    </div>
 
-    <el-row :gutter="16" class="mt-20px">
-      <!-- AI Irrigation Decision -->
-      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
-        <el-card shadow="hover" class="task-card h-full">
-          <template #header>
-            <div class="flex items-center gap-10px">
-              <span class="font-semibold">AI Irrigation Decision</span>
-            </div>
-          </template>
-          <div class="task-desc text-sm text-gray-500 mb-16px">
-            Run Bedrock decision engine; create irrigation plans.
-          </div>
-          <div class="flex items-center gap-8px text-xs text-gray-400 mb-16px">
-            <el-icon><Clock /></el-icon>
-            <span>Cron: every 30 min</span>
-          </div>
-          <el-button
-            type="success"
-            :loading="loading.aiIrrigation"
-            @click="runTask('aiIrrigation', DemoApi.triggerAiIrrigation)"
-            class="w-full"
-          >
-            <el-icon class="mr-4px"><MagicStick /></el-icon>
-            Trigger AI Irrigation Decision
-          </el-button>
-        </el-card>
-      </el-col>
-
-      <!-- Irrigation Plan Execution -->
-      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
-        <el-card shadow="hover" class="task-card h-full">
-          <template #header>
-            <div class="flex items-center gap-10px">
-              <span class="font-semibold">Irrigation Plan Execution</span>
-            </div>
-          </template>
-          <div class="task-desc text-sm text-gray-500 mb-16px">
-            Dispatch PENDING plans, finish EXECUTING ones, flag faults.
-          </div>
-          <div class="flex items-center gap-8px text-xs text-gray-400 mb-16px">
-            <el-icon><Clock /></el-icon>
-            <span>Cron: every minute</span>
-          </div>
-          <el-button
-            type="warning"
-            :loading="loading.irrigationExecution"
-            @click="runTask('irrigationExecution', DemoApi.triggerIrrigationExecution)"
-            class="w-full"
-          >
-            <el-icon class="mr-4px"><Odometer /></el-icon>
-            Trigger Plan Execution
-          </el-button>
-        </el-card>
-      </el-col>
-
-      <!-- Test Alerts -->
-      <el-col :xs="24" :sm="12" :md="8" :lg="6" class="mb-16px">
-        <el-card shadow="hover" class="task-card h-full">
-          <template #header>
-            <div class="flex items-center gap-10px">
-              <span class="font-semibold">Inject Test Alert</span>
-            </div>
-          </template>
-          <div class="task-desc text-sm text-gray-500 mb-16px">
-            Insert a test alert record (for UI demo).
-          </div>
-          <div class="flex flex-col gap-8px">
-            <el-button
-              plain
-              type="warning"
-              size="small"
-              :loading="loading['testAlert_SENSOR_ABNORMAL']"
-              @click="runTestAlert('SENSOR_ABNORMAL')"
-            >
-              Sensor Abnormal
-            </el-button>
-            <el-button
-              plain
-              type="danger"
-              size="small"
-              :loading="loading['testAlert_IRRIGATION_ABNORMAL']"
-              @click="runTestAlert('IRRIGATION_ABNORMAL')"
-            >
-              Irrigation Fault
-            </el-button>
-            <el-button
-              plain
-              type="info"
-              size="small"
-              :loading="loading['testAlert_EXTREME_WEATHER']"
-              @click="runTestAlert('EXTREME_WEATHER')"
-            >
-              Extreme Weather
-            </el-button>
-          </div>
-        </el-card>
-      </el-col>
-
-    </el-row>
-
-    <el-row :gutter="16" class="mt-4px">
+    <el-row :gutter="16" class="sensor-report-row mt-20px">
       <el-col :xs="24" :lg="12" class="mb-16px">
-        <el-card shadow="never">
+        <el-card shadow="never" class="report-card">
           <template #header>
             <div class="flex items-center justify-between">
-              <span class="font-semibold">Periodic Random Reporting</span>
+              <span class="font-semibold">Periodic Sensor Data Report</span>
               <el-tag :type="reportingStatus.running ? 'success' : 'info'">
                 {{ reportingStatus.running ? 'Running' : 'Stopped' }}
               </el-tag>
@@ -174,9 +74,9 @@
       </el-col>
 
       <el-col :xs="24" :lg="12" class="mb-16px">
-        <el-card shadow="never">
+        <el-card shadow="never" class="report-card">
           <template #header>
-            <span class="font-semibold">Manual Single Report</span>
+            <span class="font-semibold">Mannual Single Sensor Data Report</span>
           </template>
 
           <el-form ref="manualFormRef" :model="manualForm" :rules="manualRules" label-width="90px">
@@ -201,7 +101,7 @@
               v-loading="reportingLoading.sensors"
               :data="manualSensorRows"
               border
-              class="mb-16px"
+              class="manual-sensor-table mb-16px"
               empty-text="Select a field to load sensors"
             >
               <el-table-column label="Sensor" min-width="140">
@@ -245,90 +145,164 @@
       </el-col>
     </el-row>
 
-    <!-- Execution log -->
-    <el-card class="mt-16px" shadow="never">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <span class="font-semibold">Execution Log</span>
-          <el-button text size="small" @click="logs = []">Clear</el-button>
-        </div>
-      </template>
-      <div class="log-box font-mono text-sm" style="min-height: 120px; max-height: 320px; overflow-y: auto;">
-        <div v-if="logs.length === 0" class="text-gray-400 text-center py-20px">
-          No tasks triggered yet. Click a button above to start.
-        </div>
-        <div
-          v-for="(entry, i) in logs"
-          :key="i"
-          :class="['log-line py-2px px-4px rounded', entry.success ? 'text-green-700' : 'text-red-600']"
-        >
-          <span class="text-gray-400 mr-8px">{{ entry.time }}</span>
-          <el-tag :type="entry.success ? 'success' : 'danger'" size="small" effect="plain" class="mr-8px">
-            {{ entry.success ? 'OK' : 'ERR' }}
-          </el-tag>
-          <span>{{ entry.message }}</span>
-        </div>
-      </div>
-    </el-card>
+    <el-row :gutter="16" class="mt-4px">
+      <!-- AI Irrigation Decision -->
+      <el-col :xs="24" :sm="12" :lg="8" class="mb-16px">
+        <el-card shadow="hover" class="task-card h-full">
+          <template #header>
+            <div class="flex items-center gap-10px">
+              <span class="font-semibold">AI Irrigation Decision</span>
+            </div>
+          </template>
+          <div class="task-desc text-sm text-gray-500 mb-16px">
+            Run Bedrock decision engine; create irrigation plans.
+          </div>
+          <div class="flex items-center gap-8px text-xs text-gray-400 mb-16px">
+            <el-icon><Clock /></el-icon>
+            <span>Cron: every 30 min</span>
+          </div>
+          <el-button
+            type="success"
+            :loading="loading.aiIrrigation"
+            @click="runTask('aiIrrigation', DemoApi.triggerAiIrrigation)"
+            class="w-full"
+          >
+            <el-icon class="mr-4px"><MagicStick /></el-icon>
+            Trigger AI Irrigation Decision
+          </el-button>
+        </el-card>
+      </el-col>
+
+      <!-- Irrigation Plan Execution -->
+      <el-col :xs="24" :sm="12" :lg="8" class="mb-16px">
+        <el-card shadow="hover" class="task-card h-full">
+          <template #header>
+            <div class="flex items-center gap-10px">
+              <span class="font-semibold">Irrigation Plan Execution</span>
+            </div>
+          </template>
+          <div class="task-desc text-sm text-gray-500 mb-16px">
+            Dispatch PENDING plans, finish EXECUTING ones, flag faults.
+          </div>
+          <div class="flex items-center gap-8px text-xs text-gray-400 mb-16px">
+            <el-icon><Clock /></el-icon>
+            <span>Cron: every minute</span>
+          </div>
+          <el-button
+            type="warning"
+            :loading="loading.irrigationExecution"
+            @click="runTask('irrigationExecution', DemoApi.triggerIrrigationExecution)"
+            class="w-full"
+          >
+            <el-icon class="mr-4px"><Odometer /></el-icon>
+            Trigger Plan Execution
+          </el-button>
+        </el-card>
+      </el-col>
+
+      <!-- Irrigation Device Fault Simulation -->
+      <el-col :xs="24" :sm="12" :lg="8" class="mb-16px">
+        <el-card shadow="hover" class="task-card h-full">
+          <template #header>
+            <div class="flex items-center gap-10px">
+              <span class="font-semibold">Device Fault Simulation</span>
+            </div>
+          </template>
+          <div class="task-desc text-sm text-gray-500 mb-16px">
+            Withhold device ACK to trigger an irrigation abnormal alert.
+          </div>
+          <el-form :model="faultForm" label-width="120px" class="fault-form">
+            <el-form-item label="Field">
+              <el-select
+                v-model="faultForm.fieldId"
+                filterable
+                clearable
+                class="!w-100%"
+                placeholder="Select field"
+                @change="handleFaultFieldChange"
+              >
+                <el-option
+                  v-for="field in fieldOptions"
+                  :key="field.id"
+                  :label="field.fieldName"
+                  :value="field.id!"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Device">
+              <el-select
+                v-model="faultForm.deviceId"
+                filterable
+                clearable
+                class="!w-100%"
+                placeholder="Select device"
+                :loading="faultLoading.devices"
+                @change="handleFaultDeviceChange"
+              >
+                <el-option
+                  v-for="device in faultDeviceOptions"
+                  :key="device.id"
+                  :label="device.deviceCode"
+                  :value="device.id!"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Simulate Fault">
+              <el-switch v-model="faultForm.simulateFault" />
+            </el-form-item>
+          </el-form>
+          <el-button
+            type="danger"
+            plain
+            :loading="faultLoading.save"
+            :disabled="!faultForm.deviceId"
+            @click="handleFaultSave"
+            class="w-full"
+          >
+            <el-icon class="mr-4px"><Warning /></el-icon>
+            Save Fault Simulation
+          </el-button>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import {
-  Bell,
   Clock,
   MagicStick,
   Odometer,
   Refresh,
   Upload,
   VideoPause,
-  VideoPlay
+  VideoPlay,
+  Warning
 } from '@element-plus/icons-vue'
 import { DemoApi } from '@/api/agri/demo'
 import { FieldApi, FieldVO } from '@/api/agri/field'
+import { IrrigationDeviceApi, IrrigationDeviceVO } from '@/api/agri/irrigationDevice'
 import { SensorApi, SensorVO } from '@/api/agri/sensor'
-import {
-  SensorReportingApi,
-  SensorReportingStatusVO
-} from '@/api/agri/sensorReporting'
+import { SensorReportingApi, SensorReportingStatusVO } from '@/api/agri/sensorReporting'
 
 defineOptions({ name: 'AgriDemo' })
 
-const router = useRouter()
-
 const loading = reactive<Record<string, boolean>>({})
-
-interface LogEntry {
-  time: string
-  success: boolean
-  message: string
-}
-const logs = ref<LogEntry[]>([])
-
-const now = () => new Date().toLocaleTimeString()
 
 const runTask = async (key: string, apiFn: () => Promise<any>) => {
   loading[key] = true
   try {
     const result = await apiFn()
     const msg = typeof result === 'string' ? result : JSON.stringify(result)
-    logs.value.unshift({ time: now(), success: true, message: msg })
     ElMessage.success(msg)
   } catch (e: any) {
     const msg = e?.message ?? String(e)
-    logs.value.unshift({ time: now(), success: false, message: msg })
     ElMessage.error(msg)
   } finally {
     loading[key] = false
   }
-}
-
-const runTestAlert = (type: string) => {
-  const key = `testAlert_${type}`
-  runTask(key, () => DemoApi.triggerTestAlert(type))
 }
 
 const reportingStatus = reactive<SensorReportingStatusVO>({
@@ -362,6 +336,16 @@ interface ManualSensorRow {
   value?: number
 }
 const manualSensorRows = ref<ManualSensorRow[]>([])
+const faultDeviceOptions = ref<IrrigationDeviceVO[]>([])
+const faultLoading = reactive({
+  devices: false,
+  save: false
+})
+const faultForm = reactive({
+  fieldId: undefined as number | undefined,
+  deviceId: undefined as number | undefined,
+  simulateFault: false
+})
 
 const applyReportingStatus = (data: SensorReportingStatusVO) => {
   Object.assign(reportingStatus, data || { running: false })
@@ -412,6 +396,58 @@ const handleFieldChange = async () => {
   await loadSensors()
 }
 
+const loadFaultDevices = async () => {
+  if (!faultForm.fieldId) {
+    faultDeviceOptions.value = []
+    return
+  }
+  faultLoading.devices = true
+  try {
+    const data = await IrrigationDeviceApi.getIrrigationDevicePage({
+      pageNo: 1,
+      pageSize: 200,
+      fieldId: faultForm.fieldId
+    })
+    faultDeviceOptions.value = data.list || []
+  } finally {
+    faultLoading.devices = false
+  }
+}
+
+const handleFaultFieldChange = async () => {
+  faultForm.deviceId = undefined
+  faultForm.simulateFault = false
+  await loadFaultDevices()
+}
+
+const handleFaultDeviceChange = () => {
+  const device = faultDeviceOptions.value.find((item) => item.id === faultForm.deviceId)
+  faultForm.simulateFault = device?.simulateFault ?? false
+}
+
+const handleFaultSave = async () => {
+  if (!faultForm.deviceId) {
+    ElMessage.warning('Please select a device')
+    return
+  }
+  faultLoading.save = true
+  try {
+    const device = await IrrigationDeviceApi.getIrrigationDevice(faultForm.deviceId)
+    await IrrigationDeviceApi.updateIrrigationDevice({
+      id: device.id,
+      fieldId: device.fieldId,
+      sensorId: device.sensorId,
+      flowRate: device.flowRate,
+      status: device.status,
+      simulateFault: faultForm.simulateFault
+    })
+    await loadFaultDevices()
+    ElMessage.success('Fault simulation updated')
+  } finally {
+    faultLoading.save = false
+  }
+}
+
 const handleReportingStart = async () => {
   if (reportingStatus.running) {
     ElMessage.warning('Please stop the current task before starting it again')
@@ -438,19 +474,25 @@ const handleReportingStop = async () => {
 
 const handleManualReport = async () => {
   await manualFormRef.value?.validate()
-  const filledRows = manualSensorRows.value.filter(row => row.value !== undefined && row.value !== null)
+  const filledRows = manualSensorRows.value.filter(
+    (row) => row.value !== undefined && row.value !== null
+  )
   if (filledRows.length === 0) {
     ElMessage.warning('Please enter at least one sensor value')
     return
   }
   reportingLoading.manual = true
   try {
-    await Promise.all(filledRows.map(row => SensorReportingApi.reportManual({
-      fieldId: manualForm.fieldId!,
-      sensorId: row.sensorId,
-      dataType: 'SOIL_MOISTURE',
-      value: row.value!
-    })))
+    await Promise.all(
+      filledRows.map((row) =>
+        SensorReportingApi.reportManual({
+          fieldId: manualForm.fieldId!,
+          sensorId: row.sensorId,
+          dataType: 'SOIL_MOISTURE',
+          value: row.value!
+        })
+      )
+    )
     ElMessage.success(`${filledRows.length} sensor reading(s) sent`)
   } finally {
     reportingLoading.manual = false
@@ -479,6 +521,22 @@ onMounted(async () => {
   background: #fafafa;
 }
 
+.report-card {
+  height: 380px;
+}
+.report-card :deep(.el-card__header) {
+  padding: 12px 16px;
+  background: #fafafa;
+}
+.report-card :deep(.el-card__body) {
+  height: calc(100% - 49px);
+  overflow: auto;
+}
+.manual-sensor-table {
+  max-height: 170px;
+  overflow: auto;
+}
+
 /* Pin the action button(s) to the bottom of every task card */
 .task-card {
   display: flex;
@@ -492,9 +550,5 @@ onMounted(async () => {
 }
 .task-card :deep(.el-card__body) > :last-child {
   margin-top: auto;
-}
-
-.log-line:hover {
-  background: #f5f5f5;
 }
 </style>

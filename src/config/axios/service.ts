@@ -59,11 +59,11 @@ service.interceptors.request.use(
     if (getAccessToken() && !isToken) {
       config.headers.Authorization = 'Bearer ' + getAccessToken() // 让每个请求携带自定义token
     }
-    // 设置租户
+    // Set tenant
     if (tenantEnable && tenantEnable === 'true') {
       const tenantId = getTenantId()
       if (tenantId) config.headers['tenant-id'] = tenantId
-      // 只有登录时，才设置 visit-tenant-id 访问租户
+      // Set visit-tenant-id only after login
       const visitTenantId = getVisitTenantId()
       if (config.headers.Authorization && visitTenantId) {
         config.headers['visit-tenant-id'] = visitTenantId

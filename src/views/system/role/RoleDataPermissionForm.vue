@@ -72,11 +72,11 @@ import * as PermissionApi from '@/api/system/permission'
 
 defineOptions({ name: 'SystemRoleDataPermissionForm' })
 
-const { t } = useI18n() // 国际化
-const message = useMessage() // 消息弹窗
+const { t } = useI18n() // Internationalization
+const message = useMessage() // Message popup
 
-const dialogVisible = ref(false) // 弹窗的是否展示
-const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
+const dialogVisible = ref(false) // Whether the dialog is visible
+const formLoading = ref(false) // Form loading state: 1) data loading during update; 2) submit button disabled
 const formData = reactive({
   id: undefined,
   name: '',
@@ -84,34 +84,34 @@ const formData = reactive({
   dataScope: undefined,
   dataScopeDeptIds: []
 })
-const formRef = ref() // 表单 Ref
-const deptOptions = ref<any[]>([]) // 部门树形结构
+const formRef = ref() // Form ref
+const deptOptions = ref<any[]>([]) // Department tree structure
 const deptExpand = ref(true) // Expand/Collapse
-const treeRef = ref() // 菜单树组件 Ref
-const treeNodeAll = ref(false) // 全选/全不选
-const checkStrictly = ref(true) // 是否严格模式，即父子不关联
+const treeRef = ref() // Menu tree component ref
+const treeNodeAll = ref(false) // Select all/none
+const checkStrictly = ref(true) // Whether strict mode is enabled, meaning parent and child nodes are not linked
 
-/** 打开弹窗 */
+/** Open dialog */
 const open = async (row: RoleApi.RoleVO) => {
   dialogVisible.value = true
   resetForm()
-  // 加载 Dept 列表。注意，必须放在前面，不然下面 setChecked 没数据节点
+  // Load the Dept list first so setChecked below has data nodes
   deptOptions.value = handleTree(await DeptApi.getSimpleDeptList())
-  // 设置数据
+  // Set data
   formData.id = row.id
   formData.name = row.name
   formData.code = row.code
   formData.dataScope = row.dataScope
   await nextTick()
-  // 需要在 DOM 渲染完成后，再设置选中状态
+  // Set checked state after DOM rendering is complete
   row.dataScopeDeptIds?.forEach((deptId: number): void => {
     treeRef.value.setChecked(deptId, true, false)
   })
 }
-defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+defineExpose({ open }) // Provide the open method for opening the dialog
 
-/** 提交表单 */
-const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
+/** Submit form */
+const emit = defineEmits(['success']) // Define the success event for callbacks after successful operations
 const submitForm = async () => {
   formLoading.value = true
   try {
@@ -126,20 +126,20 @@ const submitForm = async () => {
     await PermissionApi.assignRoleDataScope(data)
     message.success(t('common.updateSuccess'))
     dialogVisible.value = false
-    // 发送操作成功的事件
+    // Emit the operation success event
     emit('success')
   } finally {
     formLoading.value = false
   }
 }
 
-/** 重置表单 */
+/** Reset form */
 const resetForm = () => {
-  // 重置选项
+  // Reset options
   treeNodeAll.value = false
   deptExpand.value = true
   checkStrictly.value = true
-  // 重置表单
+  // Reset form
   formData.value = {
     id: undefined,
     name: '',
@@ -151,12 +151,12 @@ const resetForm = () => {
   formRef.value?.resetFields()
 }
 
-/** 全选/全不选 */
+/** Select all/none */
 const handleCheckedTreeNodeAll = () => {
   treeRef.value.setCheckedNodes(treeNodeAll.value ? deptOptions.value : [])
 }
 
-/** Expand/Collapse全部 */
+/** Expand/collapse all */
 const handleCheckedTreeExpand = () => {
   const nodes = treeRef.value?.store.nodesMap
   for (let node in nodes) {

@@ -42,19 +42,19 @@
 import { DICT_TYPE } from '@/utils/dict'
 import * as SocialUserApi from '@/api/system/social/user'
 
-const dialogVisible = ref(false) // 弹窗的是否展示
-const detailLoading = ref(false) // 表单的加载中
-const detailData = ref({} as SocialUserApi.SocialUserVO) // Detail数据
+const dialogVisible = ref(false) // Whether the dialog is visible
+const detailLoading = ref(false) // Detail loading state
+const detailData = ref({} as SocialUserApi.SocialUserVO) // Detail data
 
-/** 打开弹窗 */
+/** Open dialog */
 const open = async (id: number) => {
   dialogVisible.value = true
-  // 设置数据
+  // Set data
   try {
     detailData.value = await SocialUserApi.getSocialUser(id)
   } finally {
     detailLoading.value = false
   }
 }
-defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+defineExpose({ open }) // Expose open method for opening the dialog
 </script>

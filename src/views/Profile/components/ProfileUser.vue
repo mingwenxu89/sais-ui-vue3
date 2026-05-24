@@ -64,7 +64,7 @@ const getUserInfo = async () => {
   userInfo.value = users
 }
 
-// 监听 userStore 中头像的变化，同步更新本地 userInfo
+// Watch avatar changes in userStore and sync local userInfo
 watch(
   () => userStore.getUser.avatar,
   (newAvatar) => {
@@ -74,7 +74,7 @@ watch(
   }
 )
 
-// 暴露刷新方法
+// Expose refresh method
 defineExpose({
   refresh: getUserInfo
 })

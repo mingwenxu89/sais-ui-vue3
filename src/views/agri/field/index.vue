@@ -20,19 +20,27 @@
         </div>
 
         <!-- Scrollable Field List -->
-        <div class="flex-1 overflow-y-auto">
+        <div class="flex-1 overflow-y-auto p-1 flex flex-col gap-[3px]">
           <div
             v-for="field in filteredFields"
             :key="field.id"
-            class="p-4 border-b border-gray-100 cursor-pointer transition-colors hover:bg-gray-50"
-            :class="{ 'bg-blue-50 border-l-4 border-l-blue-500': selectedFieldId === field.id }"
+            class="p-4 rounded bg-gray-50 cursor-pointer transition-colors hover:bg-gray-100"
+            :class="{ '!bg-blue-50 border-l-4 border-l-blue-500': selectedFieldId === field.id }"
             @click="selectField(field)"
           >
             <div class="flex items-center justify-between">
               <div class="font-medium text-gray-800">{{ field.fieldName }}</div>
             </div>
-            <div class="text-sm text-gray-500 mt-1">
-              {{ field.area ? field.area + ' acres' : 'No area' }}
+            <div class="text-sm text-gray-500 mt-1 flex items-center justify-between gap-2">
+              <span>{{ field.area ? field.area + ' acres' : 'No area' }}</span>
+              <span
+                v-if="getFieldCurrentCrop(field.id)"
+                class="inline-flex items-center min-w-0 max-w-[130px] px-2 py-0.5 rounded-full bg-green-50 text-green-700 text-xs font-medium"
+                :title="getFieldCurrentCrop(field.id)?.cropName"
+              >
+                <span class="truncate">{{ getFieldCurrentCrop(field.id)?.cropName }}</span>
+              </span>
+              <span v-else class="text-xs text-gray-300">No crop</span>
             </div>
           </div>
 
@@ -152,9 +160,14 @@
                     <Icon icon="ep:water-cup" class="text-sm" />
                     Irrigation Devices
                   </div>
-                  <el-button size="small" type="primary" text @click="openAddDeviceForm">
-                    <Icon icon="ep:plus" />Add
-                  </el-button>
+                  <div class="flex items-center gap-1">
+                    <el-button size="small" type="primary" text @click="openAddSensorForm">
+                      <Icon icon="ep:plus" />Sensor
+                    </el-button>
+                    <el-button size="small" type="primary" text @click="openAddDeviceForm">
+                      <Icon icon="ep:plus" />Device
+                    </el-button>
+                  </div>
                 </div>
                 <div class="overflow-y-auto px-3 py-3">
                   <div v-if="overviewLoading" class="flex items-center justify-center py-6 text-gray-400">
@@ -245,6 +258,9 @@
     <!-- Irrigation Device Form Dialog -->
     <IrrigationDeviceForm ref="irrigationDeviceFormRef" @success="onDeviceSuccess" />
 
+    <!-- Sensor Form Dialog -->
+    <SensorForm ref="sensorFormRef" @success="onSensorSuccess" />
+
     <!-- Field Edit Dialog -->
     <el-dialog
       v-model="dialogVisible"
@@ -293,6 +309,7 @@ import { IrrigationDeviceApi, IrrigationDeviceVO } from '@/api/agri/irrigationDe
 import { Loading } from '@element-plus/icons-vue'
 import CropPlanForm from '@/views/agri/cropPlan/CropPlanForm.vue'
 import IrrigationDeviceForm from '@/views/agri/irrigationDevice/IrrigationDeviceForm.vue'
+import SensorForm from '@/views/agri/sensor/SensorForm.vue'
 
 defineOptions({ name: 'AgriField' })
 
@@ -309,6 +326,7 @@ const formRef = ref()
 const fieldNameInputRef = ref()
 const cropPlanFormRef = ref()
 const irrigationDeviceFormRef = ref()
+const sensorFormRef = ref()
 const isDrawingMode = ref(false)
 const farmLocation = ref({ latitude: 0, longitude: 0 })
 
@@ -316,6 +334,7 @@ const fields = ref<FieldVO[]>([])
 const selectedFieldId = ref<number | null>(null)
 const selectedField = ref<FieldVO | null>(null)
 const currentCropPlan = ref<CropPlanVO | null>(null)
+const fieldCurrentCropPlans = ref<Record<number, CropPlanVO | null>>({})
 const searchKeyword = ref('')
 
 // Overview panel state
@@ -347,6 +366,11 @@ const filteredFields = computed(() => {
   const kw = searchKeyword.value.toLowerCase()
   return fields.value.filter(f => f.fieldName?.toLowerCase().includes(kw))
 })
+
+const getFieldCurrentCrop = (fieldId?: number) => {
+  if (!fieldId) return null
+  return fieldCurrentCropPlans.value[fieldId] ?? null
+}
 
 const formatRelativeTime = (dt?: string) => {
   if (!dt) return ''
@@ -447,11 +471,24 @@ const loadFields = async () => {
   try {
     const data = await FieldApi.getFieldPage({ pageNo: 1, pageSize: 100 })
     fields.value = data.list
+    await loadFieldCurrentCropPlans(fields.value)
   } catch (e) {
     console.error('Failed to load fields', e)
   } finally {
     loading.value = false
   }
+}
+
+const loadFieldCurrentCropPlans = async (fieldList: FieldVO[]) => {
+  const entries = await Promise.all(
+    fieldList
+      .filter((field) => field.id)
+      .map(async (field) => [
+        field.id!,
+        await CropPlanApi.getCurrentCropPlan(field.id!).catch(() => null)
+      ] as const)
+  )
+  fieldCurrentCropPlans.value = Object.fromEntries(entries)
 }
 
 const loadGoogleMaps = () => {
@@ -665,6 +702,7 @@ const selectField = async (field: FieldVO) => {
   currentCropPlan.value = null
   if (field.id) {
     currentCropPlan.value = await CropPlanApi.getCurrentCropPlan(field.id).catch(() => null)
+    fieldCurrentCropPlans.value[field.id] = currentCropPlan.value
   }
   drawAllFields()
   overviewVisible.value = true
@@ -687,11 +725,20 @@ const openCropPlanForm = () => {
 const onCropPlanSuccess = async () => {
   if (selectedFieldId.value) {
     currentCropPlan.value = await CropPlanApi.getCurrentCropPlan(selectedFieldId.value).catch(() => null)
+    fieldCurrentCropPlans.value[selectedFieldId.value] = currentCropPlan.value
   }
 }
 
 const openAddDeviceForm = () => {
   irrigationDeviceFormRef.value.open('create', undefined, selectedFieldId.value)
+}
+
+const openAddSensorForm = () => {
+  sensorFormRef.value.open('create', undefined, selectedFieldId.value)
+}
+
+const onSensorSuccess = () => {
+  if (selectedFieldId.value) loadOverview(selectedFieldId.value)
 }
 
 const onDeviceSuccess = () => {

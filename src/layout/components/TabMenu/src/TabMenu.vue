@@ -86,13 +86,13 @@ export default defineComponent({
       }
     )
 
-    // 是否显示菜单
+    // Whether to show menu
     const showMenu = ref(unref(fixedMenu) ? true : false)
 
-    // tab高亮
+    // Active tab
     const tabActive = ref('')
 
-    // tab点击事件
+    // Tab click event
     const tabClick = (item: AppRouteRecordRaw) => {
       if (isUrl(item.path)) {
         window.open(item.path)

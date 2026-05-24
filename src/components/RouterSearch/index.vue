@@ -1,5 +1,5 @@
 <template>
-  <ElDialog v-if="isModal" v-model="showSearch" :show-close="false" title="菜单搜索">
+  <ElDialog v-if="isModal" v-model="showSearch" :show-close="false" title="Menu Search">
     <el-select
       filterable
       :reserve-keyword="false"
@@ -50,14 +50,14 @@ defineProps({
   color: propTypes.string.def('')
 })
 
-const router = useRouter() // 路由对象
-const showSearch = ref(false) // 是否显示弹框
-const showTopSearch = ref(false) // 是否显示顶部搜索框
-const value: Ref = ref('') // 用户输入的值
+const router = useRouter() // Router object
+const showSearch = ref(false) // Whether to show dialog
+const showTopSearch = ref(false) // Whether to show top search box
+const value: Ref = ref('') // User input value
 
-const routers = router.getRoutes() // 路由对象
+const routers = router.getRoutes() // Router object
 const options = computed(() => {
-  // 提示选项
+  // Prompt options
   if (!value.value) {
     return []
   }
@@ -75,7 +75,7 @@ const options = computed(() => {
 })
 
 function remoteMethod(data) {
-  // 这里可以执行相应的操作（例如打开搜索框等）
+  // Perform the corresponding action here, such as opening the search box
   value.value = data
 }
 
@@ -103,13 +103,13 @@ onUnmounted(() => {
   window.removeEventListener('click', hiddenTopSearch)
 })
 
-// 监听 ctrl + k
+// Listen for Ctrl + K
 function listenKey(event) {
   if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
-    // 阻止触发浏览器默认事件
+    // Prevent triggering the browser default event
     event.preventDefault()
     showSearch.value = !showSearch.value
-    // 这里可以执行相应的操作（例如打开搜索框等）
+    // Perform the corresponding action here, such as opening the search box
   }
 }
 

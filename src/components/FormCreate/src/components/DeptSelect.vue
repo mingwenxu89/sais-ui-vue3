@@ -1,4 +1,4 @@
-<!-- 部门选择器 - 树形结构显示 -->
+<!-- Department selector - tree structure display -->
 <template>
   <el-tree-select
     v-model="selectedValue"
@@ -7,7 +7,7 @@
     :props="treeProps"
     :multiple="multiple"
     :disabled="disabled"
-    :placeholder="placeholder || '请选择部门'"
+    :placeholder="placeholder || 'Select department'"
     :check-strictly="true"
     :filterable="true"
     :filter-node-method="filterNode"
@@ -25,7 +25,7 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 
 defineOptions({ name: 'DeptSelect' })
 
-// 接受父组件参数
+// Accept parent component parameters
 interface Props {
   modelValue?: number | string | number[] | string[]
   multiple?: boolean
@@ -48,52 +48,52 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: number | string | number[] | string[] | undefined): void
 }>()
 
-// 树形选择器配置
+// Tree selector configuration
 const treeProps = {
   label: 'name',
   value: 'id',
   children: 'children'
 }
 
-// 部门树形数据
+// Department tree data
 const deptTree = ref<any[]>([])
-// 原始部门列表（用于 returnType='name' 时查找名称）
+// Original department list, used to find names when returnType='name'
 const deptList = ref<DeptVO[]>([])
-// 当前选中值
+// Current selected value
 const selectedValue = ref<number | string | number[] | string[] | undefined>()
 
-// 加载部门树形数据
+// Load department tree data
 const loadDeptTree = async () => {
   try {
     const data = await getSimpleDeptList()
     deptList.value = data
     deptTree.value = handleTree(data)
   } catch (error) {
-    console.warn('加载部门数据失败:', error)
+    console.warn('Failed to load department data:', error)
     deptTree.value = []
   }
 }
 
-// 根据 ID 获取部门名称
+// Get department name by ID
 const getDeptNameById = (id: number): string | undefined => {
   const dept = deptList.value.find((item) => item.id === id)
   return dept?.name
 }
 
-// 根据名称获取部门 ID
+// Get department ID by name
 const getDeptIdByName = (name: string): number | undefined => {
   const dept = deptList.value.find((item) => item.name === name)
   return dept?.id
 }
 
-// 处理选中值变化
+// Handle selected value change
 const handleChange = (value: number | number[] | undefined) => {
   if (value === undefined || value === null) {
     emit('update:modelValue', props.multiple ? [] : undefined)
     return
   }
 
-  // 根据 returnType 决定返回值类型
+  // Determine the emitted value type based on returnType
   if (props.returnType === 'name') {
     if (props.multiple && Array.isArray(value)) {
       const names = value.map((id) => getDeptNameById(id)).filter(Boolean) as string[]
@@ -107,13 +107,13 @@ const handleChange = (value: number | number[] | undefined) => {
   }
 }
 
-// 树节点过滤方法（支持搜索过滤）
+// Tree node filter method that supports search
 const filterNode = (value: string, data: any) => {
   if (!value) return true
   return data.name.includes(value)
 }
 
-// 监听 modelValue 变化，同步到内部选中值
+// Watch modelValue changes and sync them to the internal selected value
 watch(
   () => props.modelValue,
   (newValue) => {
@@ -122,7 +122,7 @@ watch(
       return
     }
 
-    // 如果 returnType 是 'name'，需要将名称转换为 ID 用于树选择器显示
+    // Convert names to IDs for tree selector display when returnType is 'name'
     if (props.returnType === 'name') {
       if (props.multiple && Array.isArray(newValue)) {
         const ids = (newValue as string[])
@@ -140,7 +140,7 @@ watch(
   { immediate: true }
 )
 
-// 检查是否有有效的预设值
+// Check whether a valid preset value exists
 const hasValidPresetValue = (): boolean => {
   const value = props.modelValue
   if (value === undefined || value === null || value === '') {
@@ -152,45 +152,45 @@ const hasValidPresetValue = (): boolean => {
   return true
 }
 
-// 设置默认值（当前用户部门）
+// Set the default value to the current user's department
 const setDefaultValue = () => {
   console.log('[DeptSelect] setDefaultValue called, defaultCurrentDept:', props.defaultCurrentDept)
   
-  // 仅当 defaultCurrentDept 为 true 时处理
+  // Only process when defaultCurrentDept is true
   if (!props.defaultCurrentDept) {
     console.log('[DeptSelect] defaultCurrentDept is false, skip')
     return
   }
   
-  // 检查是否已有预设值（预设值优先级高于默认当前部门）
+  // Preset values take precedence over the current department default
   if (hasValidPresetValue()) {
     console.log('[DeptSelect] has preset value, skip:', props.modelValue)
     return
   }
   
-  // 获取当前用户的部门 ID
+  // Get the current user's department ID
   const userStore = useUserStoreWithOut()
   const user = userStore.getUser
   const deptId = user?.deptId
   
   console.log('[DeptSelect] current user:', user, 'deptId:', deptId)
   
-  // 处理 deptId 为空或 0 的边界情况
+  // Handle empty or zero deptId edge cases
   if (!deptId || deptId === 0) {
     console.log('[DeptSelect] deptId is invalid, skip')
     return
   }
   
-  // 根据多选模式决定默认值格式
+  // Determine the default value format based on multi-select mode
   const defaultValue = props.multiple ? [deptId] : deptId
   console.log('[DeptSelect] setting default value:', defaultValue)
   emit('update:modelValue', defaultValue)
 }
 
-// 组件挂载时加载数据并设置默认值
+// Load data and set the default value when the component mounts
 onMounted(async () => {
   await loadDeptTree()
-  // 数据加载完成后设置默认值
+  // Set the default value after data has loaded
   setDefaultValue()
 })
 </script>

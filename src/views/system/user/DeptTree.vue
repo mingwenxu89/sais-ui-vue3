@@ -1,6 +1,6 @@
 <template>
   <div class="head-container">
-    <el-input v-model="deptName" class="mb-20px" clearable placeholder="Enter部门名称">
+    <el-input v-model="deptName" class="mb-20px" clearable placeholder="Enter Department Name">
       <template #prefix>
         <Icon icon="ep:search" />
       </template>
@@ -29,37 +29,37 @@ import { defaultProps, handleTree } from '@/utils/tree'
 defineOptions({ name: 'SystemUserDeptTree' })
 
 const deptName = ref('')
-const deptList = ref<Tree[]>([]) // 树形结构
+const deptList = ref<Tree[]>([]) // Tree structure
 const treeRef = ref<InstanceType<typeof ElTree>>()
 
-/** 获得部门树 */
+/** Get department tree */
 const getTree = async () => {
   const res = await DeptApi.getSimpleDeptList()
   deptList.value = []
   deptList.value.push(...handleTree(res))
 }
 
-/** 基于名字过滤 */
+/** Filter by name */
 const filterNode = (name: string, data: Tree) => {
   if (!name) return true
   return data.name.includes(name)
 }
 
-/** 处理部门被点击 */
+/** Handle department node click */
 let currentNode: any = {}
 const handleNodeClick = async (row: { [key: string]: any }, treeNode: any) => {
-  // 判断选中状态
+  // Determine selected state
   if (currentNode && currentNode.name === row.name) {
     treeNode.checked = !treeNode.checked
   } else {
     treeNode.checked = true
   }
   if (treeNode.checked) {
-    // 选中
+    // Selected
     currentNode = row
     emits('node-click', row)
   } else {
-    // 取消选中
+    // Deselected
     treeRef.value!.setCurrentKey(undefined)
     emits('node-click', undefined)
     currentNode = null
@@ -67,12 +67,12 @@ const handleNodeClick = async (row: { [key: string]: any }, treeNode: any) => {
 }
 const emits = defineEmits(['node-click'])
 
-/** 监听deptName */
+/** Watch deptName */
 watch(deptName, (val) => {
   treeRef.value!.filter(val)
 })
 
-/** 初始化 */
+/** Initialize */
 onMounted(async () => {
   await getTree()
 })

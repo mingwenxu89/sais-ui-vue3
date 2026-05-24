@@ -12,42 +12,42 @@ export interface RoleVO {
   createTime: Date
 }
 
-// 查询角色列表
+// Query role list
 export const getRolePage = async (params: PageParam) => {
   return await request.get({ url: '/system/role/page', params })
 }
 
-// 查询角色（精简)列表
+// Query simplified role list
 export const getSimpleRoleList = async (): Promise<RoleVO[]> => {
   return await request.get({ url: '/system/role/simple-list' })
 }
 
-// 查询角色详情
+// Query role details
 export const getRole = async (id: number) => {
   return await request.get({ url: '/system/role/get?id=' + id })
 }
 
-// 新增角色
+// Create role
 export const createRole = async (data: RoleVO) => {
   return await request.post({ url: '/system/role/create', data })
 }
 
-// 修改角色
+// Update role
 export const updateRole = async (data: RoleVO) => {
   return await request.put({ url: '/system/role/update', data })
 }
 
-// 删除角色
+// Delete role
 export const deleteRole = async (id: number) => {
   return await request.delete({ url: '/system/role/delete?id=' + id })
 }
 
-// 批量删除角色
+// Batch delete roles
 export const deleteRoleList = async (ids: number[]) => {
   return await request.delete({ url: '/system/role/delete-list', params: { ids: ids.join(',') } })
 }
 
-// 导出角色
+// Export roles
 export const exportRole = (params: any) => {
   return request.download({
     url: '/system/role/export-excel',

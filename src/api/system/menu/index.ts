@@ -18,32 +18,32 @@ export interface MenuVO {
   createTime: Date
 }
 
-// 查询菜单（精简）列表
+// Query simplified menu list
 export const getSimpleMenusList = () => {
   return request.get({ url: '/system/menu/simple-list' })
 }
 
-// 查询菜单列表
+// Query menu list
 export const getMenuList = (params) => {
   return request.get({ url: '/system/menu/list', params })
 }
 
-// 获取菜单详情
+// Get menu details
 export const getMenu = (id: number) => {
   return request.get({ url: '/system/menu/get?id=' + id })
 }
 
-// 新增菜单
+// Create menu
 export const createMenu = (data: MenuVO) => {
   return request.post({ url: '/system/menu/create', data })
 }
 
-// 修改菜单
+// Update menu
 export const updateMenu = (data: MenuVO) => {
   return request.put({ url: '/system/menu/update', data })
 }
 
-// 删除菜单
+// Delete menu
 export const deleteMenu = (id: number) => {
   return request.delete({ url: '/system/menu/delete?id=' + id })
 }

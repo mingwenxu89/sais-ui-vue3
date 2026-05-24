@@ -1,8 +1,8 @@
 <template>
-  <!-- <doc-alert title="功能权限" url="https://doc.iocoder.cn/resource-permission" />
-  <doc-alert title="菜单路由" url="https://doc.iocoder.cn/vue3/route/" /> -->
+  <!-- <doc-alert title="Feature Permissions" url="https://doc.iocoder.cn/resource-permission" />
+  <doc-alert title="Menu Routes" url="https://doc.iocoder.cn/vue3/route/" /> -->
 
-  <!-- 搜索工作栏 -->
+  <!-- Search toolbar -->
   <ContentWrap>
     <el-form
       ref="queryFormRef"
@@ -64,7 +64,7 @@
     </el-form>
   </ContentWrap>
 
-  <!-- 列表 -->
+  <!-- List -->
   <ContentWrap>
     <el-auto-resizer>
       <template #default="{ width }">
@@ -82,7 +82,7 @@
     </el-auto-resizer>
   </ContentWrap>
 
-  <!-- 表单弹窗：添加/修改 -->
+  <!-- Form dialog: add/update -->
   <MenuForm ref="formRef" @success="getList" />
 </template>
 <script lang="tsx" setup>
@@ -100,7 +100,7 @@ import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
 
 defineOptions({ name: 'SystemMenu' })
 
-// 虚拟列表表格
+// Virtual list table
 const columns = [
   {
     key: 'name',
@@ -148,12 +148,12 @@ const columns = [
     width: 60,
     fixed: TableV2FixedDir.RIGHT,
     cellRenderer: ({ rowData }) => {
-      // 检查权限
+      // Check permission
       if (!checkPermi(['system:menu:update'])) {
         return <DictTag type={DICT_TYPE.COMMON_STATUS} value={rowData.status} />
       }
 
-      // 如果有权限，渲染 ElSwitch
+      // Render ElSwitch if permission is granted
       return (
         <ElSwitch
           v-model={rowData.status}
@@ -173,10 +173,10 @@ const columns = [
     width: 160,
     fixed: TableV2FixedDir.RIGHT,
     cellRenderer: ({ rowData }) => {
-      // 定义按钮列表
+      // Define button list
       const buttons: InstanceType<typeof ElButton>[] = []
 
-      // 检查权限并添加按钮
+      // Check permissions and add buttons
       if (checkPermi(['system:menu:update'])) {
         buttons.push(
           <ElButton key="edit" link type="primary" onClick={() => openForm('update', rowData.id)}>
@@ -203,34 +203,34 @@ const columns = [
           </ElButton>
         )
       }
-      // 如果没有权限，返回 null
+      // Return null when no permission is granted
       if (buttons.length === 0) {
         return null
       }
-      // 渲染按钮列表
+      // Render button list
       return <>{buttons}</>
     }
   }
 ]
 
 const { wsCache } = useCache()
-const { t } = useI18n() // 国际化
-const message = useMessage() // 消息弹窗
+const { t } = useI18n() // Internationalization
+const message = useMessage() // Message popup
 
-const loading = ref(true) // 列表的加载中
-const list = ref<any[]>([]) // 列表的数据
+const loading = ref(true) // List loading state
+const list = ref<any[]>([]) // List data
 const queryParams = reactive({
   name: undefined,
   status: undefined
 })
-const queryFormRef = ref() // 搜索的表单
-const isExpandAll = ref(false) // 是否展开，默认全部折叠
-const refreshTable = ref(true) // 重新渲染表格状态
+const queryFormRef = ref() // Search form
+const isExpandAll = ref(false) // Whether expanded, collapsed by default
+const refreshTable = ref(true) // Table rerender state
 
-// 添加展开行控制
+// Add expanded row control
 const expandedRowKeys = ref<number[]>([])
 
-/** 查询列表 */
+/** Query list */
 const getList = async () => {
   loading.value = true
   try {
@@ -241,76 +241,76 @@ const getList = async () => {
   }
 }
 
-/** 搜索按钮操作 */
+/** Search button action */
 const handleQuery = () => {
   getList()
 }
 
-/** 重置按钮操作 */
+/** Reset button action */
 const resetQuery = () => {
   queryFormRef.value.resetFields()
   handleQuery()
 }
 
-/** 添加/修改操作 */
+/** Add/update action */
 const formRef = ref()
 const openForm = (type: string, id?: number, parentId?: number) => {
   formRef.value.open(type, id, parentId)
 }
 
-/** Expand/Collapse操作 */
+/** Expand/collapse action */
 const toggleExpandAll = () => {
   if (!isExpandAll.value) {
-    // 展开所有
+    // Expand all
     expandedRowKeys.value = list.value.map((item) => item.id)
   } else {
-    // 折叠所有
+    // Collapse all
     expandedRowKeys.value = []
   }
   isExpandAll.value = !isExpandAll.value
 }
 
-/** Refresh Menu Cache按钮操作 */
+/** Refresh Menu Cache button action */
 const refreshMenu = async () => {
   try {
     await message.confirm('Cache will be cleared and browser refreshed!', 'Refresh Menu Cache')
-    // 清空，从而触发刷新
+    // Clear cache to trigger refresh
     wsCache.delete(CACHE_KEY.USER)
     wsCache.delete(CACHE_KEY.ROLE_ROUTERS)
-    // 刷新浏览器
+    // Refresh browser
     location.reload()
   } catch {}
 }
 
-/** 删除按钮操作 */
+/** Delete button action */
 const handleDelete = async (id: number) => {
   try {
-    // 删除的二次确认
+    // Secondary confirmation before deletion
     await message.delConfirm()
-    // 发起删除
+    // Start deletion
     await MenuApi.deleteMenu(id)
     message.success(t('common.delSuccess'))
-    // 刷新列表
+    // Refresh list
     await getList()
   } catch {}
 }
 
-/** 开启/关闭菜单的状态 */
-const menuStatusUpdating = ref({}) // 菜单状态更新中的 menu 映射。key：菜单编号，value：是否更新中
+/** Enable/disable menu status */
+const menuStatusUpdating = ref({}) // Menu status update mapping. key: menu ID, value: whether updating
 const handleStatusChanged = async (menu: MenuVO, val: number) => {
-  // 1. 标记 menu.id 更新中
+  // 1. Mark menu.id as updating
   menuStatusUpdating.value[menu.id] = true
   try {
-    // 2. 发起更新状态
+    // 2. Start status update
     menu.status = val
     await MenuApi.updateMenu(menu)
   } finally {
-    // 3. 标记 menu.id 更新完成
+    // 3. Mark menu.id update as complete
     menuStatusUpdating.value[menu.id] = false
   }
 }
 
-/** 初始化 **/
+/** Initialize */
 onMounted(() => {
   getList()
 })

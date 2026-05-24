@@ -2,11 +2,11 @@ import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
 import {hasPermission} from "@/directives/permission/hasPermi";
 
 
-const { t } = useI18n() // 国际化
+const { t } = useI18n() // Internationalization
 
 /**
- * 字符权限校验
- * @param {Array} value 校验值
+ * String permission check
+ * @param {Array} value Check value
  * @returns {Boolean}
  */
 export function checkPermi(permission: string[]) {
@@ -14,8 +14,8 @@ export function checkPermi(permission: string[]) {
 }
 
 /**
- * 角色权限校验
- * @param {string[]} value 校验值
+ * Role permission check
+ * @param {string[]} value Check value
  * @returns {Boolean}
  */
 export function checkRole(value: string[]) {

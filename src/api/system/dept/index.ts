@@ -12,42 +12,42 @@ export interface DeptVO {
   createTime: Date
 }
 
-// 查询部门（精简)列表
+// Query simplified department list
 export const getSimpleDeptList = (): Promise<DeptVO[]> => {
   return request.get({ url: '/system/dept/simple-list' })
 }
 
-// 查询部门列表
+// Query department list
 export const getDeptList = (params: any) => {
   return request.get({ url: '/system/dept/list', params })
 }
 
-// 查询部门分页
+// Query department page
 export const getDeptPage = async (params: PageParam) => {
   return await request.get({ url: '/system/dept/list', params })
 }
 
-// 查询部门详情
+// Query department details
 export const getDept = (id: number) => {
   return request.get({ url: '/system/dept/get?id=' + id })
 }
 
-// 新增部门
+// Create department
 export const createDept = (data: DeptVO) => {
   return request.post({ url: '/system/dept/create', data })
 }
 
-// 修改部门
+// Update department
 export const updateDept = (data: DeptVO) => {
   return request.put({ url: '/system/dept/update', data })
 }
 
-// 删除部门
+// Delete department
 export const deleteDept = async (id: number) => {
   return await request.delete({ url: '/system/dept/delete?id=' + id })
 }
 
-// 批量删除部门
+// Batch delete departments
 export const deleteDeptList = async (ids: number[]) => {
   return await request.delete({ url: '/system/dept/delete-list', params: { ids: ids.join(',') } })
 }

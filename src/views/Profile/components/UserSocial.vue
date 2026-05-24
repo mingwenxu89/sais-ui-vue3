@@ -1,21 +1,21 @@
 <template>
   <el-table :data="socialUsers" :show-header="false">
-    <el-table-column fixed="left" title="序号" type="seq" width="60" />
-    <el-table-column align="left" label="社交平台" width="120">
+    <el-table-column fixed="left" title="No." type="seq" width="60" />
+    <el-table-column align="left" label="Social Platform" width="120">
       <template #default="{ row }">
         <img :src="row.img" alt="" class="h-5 align-middle" />
         <p class="mr-5">{{ row.title }}</p>
       </template>
     </el-table-column>
-    <el-table-column align="center" label="操作">
+    <el-table-column align="center" label="Actions">
       <template #default="{ row }">
         <template v-if="row.openid">
-          已绑定
-          <XTextButton class="mr-5" title="(解绑)" type="primary" @click="unbind(row)" />
+          Bound
+          <XTextButton class="mr-5" title="(Unbind)" type="primary" @click="unbind(row)" />
         </template>
         <template v-else>
-          未绑定
-          <XTextButton class="mr-5" title="(绑定)" type="primary" @click="bind(row)" />
+          Not bound
+          <XTextButton class="mr-5" title="(Bind)" type="primary" @click="bind(row)" />
         </template>
       </template>
     </el-table-column>
@@ -34,10 +34,10 @@ const message = useMessage()
 const socialUsers = ref<any[]>([])
 
 const initSocial = async () => {
-  socialUsers.value = [] // 重置避免无限增长
-  // 获取已绑定的社交用户列表
+  socialUsers.value = [] // Reset to avoid infinite growth
+  // Get bound social user list
   const bindSocialUserList = await getBindSocialUserList()
-  // 检查该社交平台是否已绑定
+  // Check whether each social platform is bound
   for (const i in SystemUserSocialTypeEnum) {
     const socialUser = { ...SystemUserSocialTypeEnum[i] }
     socialUsers.value.push(socialUser)
@@ -56,7 +56,7 @@ const emit = defineEmits<{
   (e: 'update:activeName', v: string): void
 }>()
 const bindSocial = () => {
-  // 社交绑定
+  // Social binding
   const type = getUrlValue('type')
   const code = route.query.code
   const state = route.query.state
@@ -64,21 +64,21 @@ const bindSocial = () => {
     return
   }
   socialBind(type, code, state).then(() => {
-    message.success('绑定成功')
+    message.success('Binding successful')
     emit('update:activeName', 'userSocial')
   })
 }
 
-// 双层 encode 需要在回调后进行 decode
+// Double encoding must be decoded after callback
 function getUrlValue(key: string): string {
   const url = new URL(decodeURIComponent(location.href))
   return url.searchParams.get(key) ?? ''
 }
 
 const bind = (row) => {
-  // 双层 encode 解决钉钉回调 type 参数丢失的问题
+  // Double encoding fixes the missing DingTalk callback type parameter
   const redirectUri = location.origin + '/user/profile?' + encodeURIComponent(`type=${row.type}`)
-  // 进行跳转
+  // Redirect
   socialAuthRedirect(row.type, encodeURIComponent(redirectUri)).then((res) => {
     window.location.href = res
   })
@@ -88,7 +88,7 @@ const unbind = async (row) => {
   if (res) {
     row.openid = undefined
   }
-  message.success('解绑成功')
+  message.success('Unbound successfully')
 }
 
 onMounted(async () => {

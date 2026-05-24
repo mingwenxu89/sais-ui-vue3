@@ -114,7 +114,7 @@ const permissionStore = usePermissionStore()
 const redirect = ref<string>('')
 const loginLoading = ref(false)
 const verify = ref()
-const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字 pictureWord 文字验证码
+const captchaType = ref('blockPuzzle') // blockPuzzle slider, clickWord click text, pictureWord text captcha
 
 const getShow = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN)
 
@@ -132,7 +132,7 @@ const loginData = reactive({
     username: import.meta.env.VITE_APP_DEFAULT_LOGIN_USERNAME || '',
     password: import.meta.env.VITE_APP_DEFAULT_LOGIN_PASSWORD || '',
     captchaVerification: '',
-    rememberMe: true // 默认记录我。如果不需要，可手动修改
+    rememberMe: true // Remember me by default. Change manually if not needed
   }
 })
 
@@ -143,25 +143,25 @@ const socialList = [
   { icon: 'ant-design:alipay-circle-filled', type: 0 }
 ]
 
-// 获取验证码
+// Get verification code
 const getCode = async () => {
-  // 情况一，未开启：则直接登录
+  // Case 1, disabled: log in directly
   if (loginData.captchaEnable === 'false') {
     await handleLogin({})
   } else {
-    // 情况二，已开启：则展示验证码；只有完成验证码的情况，才进行登录
-    // 弹出验证码
+    // Case 2, enabled: show captcha; log in only after captcha is completed
+    // Show captcha
     verify.value.show()
   }
 }
-// 获取租户 ID
+// Get tenant ID
 const getTenantId = async () => {
   if (loginData.tenantEnable === 'true') {
     const res = await LoginApi.getTenantIdByName(loginData.loginForm.tenantName)
     authUtil.setTenantId(res)
   }
 }
-// 记住我
+// Remember me
 const getLoginFormCache = () => {
   const loginForm = authUtil.getLoginForm()
   if (loginForm) {
@@ -174,7 +174,7 @@ const getLoginFormCache = () => {
     }
   }
 }
-// 根据域名，获得租户信息
+// Get tenant information by domain
 const getTenantByWebsite = async () => {
   if (loginData.tenantEnable === 'true') {
     const website = location.host
@@ -185,8 +185,8 @@ const getTenantByWebsite = async () => {
     }
   }
 }
-const loading = ref() // ElLoading.service 返回的实例
-// 登录
+const loading = ref() // ElLoading.service instance
+// Login
 const handleLogin = async (params: any) => {
   loginLoading.value = true
   try {
@@ -218,7 +218,7 @@ const handleLogin = async (params: any) => {
     if (!redirect.value) {
       redirect.value = '/'
     }
-    // 判断是否为SSO登录
+    // Check whether this is SSO login
     if (redirect.value.indexOf('sso') !== -1) {
       window.location.href = window.location.href.replace('/login?redirect=', '')
     } else {
@@ -230,19 +230,19 @@ const handleLogin = async (params: any) => {
   }
 }
 
-// 社交登录
+// Social login
 const doSocialLogin = async (type: number) => {
   if (type === 0) {
-    message.error('此方式未配置')
+    message.error('This login method is not configured')
   } else {
     loginLoading.value = true
     if (loginData.tenantEnable === 'true') {
-      // 尝试先通过 tenantName 获取租户
+      // Try to get tenant by tenantName first
       await getTenantId()
-      // 如果获取不到，则需要弹出提示，进行处理
+      // If unavailable, prompt for manual handling
       if (!authUtil.getTenantId()) {
         try {
-          const data = await message.prompt('请输入租户名称', t('common.reminder'))
+          const data = await message.prompt('Please enter tenant name', t('common.reminder'))
           if (data?.action !== 'confirm') throw 'cancel'
           const res = await LoginApi.getTenantIdByName(data.value)
           authUtil.setTenantId(res)
@@ -253,15 +253,15 @@ const doSocialLogin = async (type: number) => {
         }
       }
     }
-    // 计算 redirectUri
-    // 注意: type、redirect 需要先 encode 一次，否则钉钉回调会丢失。
-    // 配合 social-login.vue#getUrlValue() 使用
+    // Calculate redirectUri
+    // Note: type and redirect must be encoded once first, otherwise DingTalk callback will lose them.
+    // Used with social-login.vue#getUrlValue()
     const redirectUri =
       location.origin +
       '/social-login?' +
       encodeURIComponent(`type=${type}&redirect=${redirect.value || '/'}`)
 
-    // 进行跳转
+    // Redirect
     window.location.href = await LoginApi.socialAuthRedirect(type, encodeURIComponent(redirectUri))
   }
 }

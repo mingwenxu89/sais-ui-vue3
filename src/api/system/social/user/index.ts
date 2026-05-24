@@ -13,17 +13,17 @@ export interface SocialUserVO {
   state: string
 }
 
-// 查询社交用户列表
+// Query social user list
 export const getSocialUserPage = async (params: any) => {
   return await request.get({ url: `/system/social-user/page`, params })
 }
 
-// 查询社交用户详情
+// Query social user details
 export const getSocialUser = async (id: number) => {
   return await request.get({ url: `/system/social-user/get?id=` + id })
 }
 
-// 获得绑定社交用户列表
+// Get bound social user list
 export const getBindSocialUserList = async () => {
   return await request.get({ url: '/system/social-user/get-bind-list' })
 }

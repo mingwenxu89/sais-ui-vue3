@@ -67,8 +67,8 @@ router.beforeEach(async (to, from, next) => {
       const dictStore = useDictStoreWithOut()
       const userStore = useUserStoreWithOut()
       const permissionStore = usePermissionStoreWithOut()
-      // 异步加载字典
-      // 另外，间接 issue：https://gitee.com/yudaocode/yudao-ui-admin-vue3/issues/ID9FLI
+      // Load dict data asynchronously.
+      // Related issue: https://gitee.com/yudaocode/yudao-ui-admin-vue3/issues/ID9FLI
       if (!dictStore.getIsSetDict) {
         dictStore.setDictMap().then()
       }
@@ -76,7 +76,7 @@ router.beforeEach(async (to, from, next) => {
         isRelogin.show = true
         await userStore.setUserInfoAction()
         isRelogin.show = false
-        // 后端过滤菜单
+        // Backend-filtered menu
         await permissionStore.generateRoutes()
         permissionStore.getAddRouters.forEach((route) => {
           router.addRoute(route as unknown as RouteRecordRaw) // 动态添加可访问路由表

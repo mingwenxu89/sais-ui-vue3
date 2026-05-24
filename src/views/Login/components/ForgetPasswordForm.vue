@@ -10,7 +10,7 @@
     size="large"
   >
     <el-row class="mx-[-10px]">
-      <!-- 租户名 -->
+      <!-- Tenant name -->
       <el-col :span="24" class="px-10px">
         <el-form-item>
           <LoginFormTitle class="w-full" />
@@ -27,7 +27,7 @@
           />
         </el-form-item>
       </el-col>
-      <!-- 手机号 -->
+      <!-- Mobile number -->
       <el-col :span="24" class="px-10px">
         <el-form-item prop="mobile">
           <el-input
@@ -45,7 +45,7 @@
         mode="pop"
         @success="getSmsCode"
       />
-      <!-- 验证码 -->
+      <!-- Verification code -->
       <el-col :span="24" class="px-10px">
         <el-form-item prop="code">
           <el-row :gutter="5" justify="space-between" style="width: 100%">
@@ -65,7 +65,7 @@
                     {{ t('login.getSmsCode') }}
                   </span>
                   <span v-if="mobileCodeTimer > 0" class="getMobileCode" style="cursor: pointer">
-                    {{ mobileCodeTimer }}秒后可重新获取
+                    Available again in {{ mobileCodeTimer }}s
                   </span>
                 </template>
               </el-input>
@@ -94,7 +94,7 @@
           />
         </el-form-item>
       </el-col>
-      <!-- 登录按钮 / 返回按钮 -->
+      <!-- Login button / back button -->
       <el-col :span="24" class="px-10px">
         <el-form-item>
           <XButton
@@ -144,21 +144,21 @@ const iconCircleCheck = useIcon({ icon: 'ep:circle-check' })
 const { validForm } = useFormValid(formSmsResetPassword)
 const { handleBackLogin, getLoginState, setLoginState } = useLoginState()
 const getShow = computed(() => unref(getLoginState) === LoginStateEnum.RESET_PASSWORD)
-const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字 pictureWord 文字验证码
+const captchaType = ref('blockPuzzle') // blockPuzzle slider, clickWord click text, pictureWord text captcha
 
 const validatePass2 = (_rule, value, callback) => {
   if (value === '') {
-    callback(new Error('请再次输入密码'))
+    callback(new Error('Please enter the password again'))
   } else if (value !== resetPasswordData.password) {
-    callback(new Error('两次输入密码不一致!'))
+    callback(new Error('The passwords entered twice do not match!'))
   } else {
     callback()
   }
 }
 
 const rules = {
-  tenantName: [{ required: true, min: 2, max: 20, trigger: 'blur', message: '长度为4到16位' }],
-  mobile: [{ required: true, min: 11, max: 11, trigger: 'blur', message: '手机号长度为11位' }],
+  tenantName: [{ required: true, min: 2, max: 20, trigger: 'blur', message: 'Length must be 4 to 16 characters' }],
+  mobile: [{ required: true, min: 11, max: 11, trigger: 'blur', message: 'Mobile number must be 11 digits' }],
   password: [
     {
       required: true,
@@ -166,7 +166,7 @@ const rules = {
       max: 16,
       validator: validatePass2,
       trigger: 'blur',
-      message: '密码长度为4到16位'
+      message: 'Password length must be 4 to 16 characters'
     }
   ],
   check_password: [{ required: true, validator: validatePass2, trigger: 'blur' }],
@@ -193,14 +193,14 @@ const smsVO = reactive({
 const mobileCodeTimer = ref(0)
 const redirect = ref<string>('')
 
-// 获取验证码
+// Get verification code
 const getCode = async () => {
-  // 情况一，未开启：则直接发送验证码
+  // Case 1, disabled: send verification code directly
   if (resetPasswordData.captchaEnable === 'false') {
     await getSmsCode({})
   } else {
-    // 情况二，已开启：则展示验证码；只有完成验证码的情况，才进行发送验证码
-    // 弹出验证码
+    // Case 2, enabled: show captcha; send verification code only after captcha is completed
+    // Show captcha
     verify.value.show()
   }
 }
@@ -213,7 +213,7 @@ const getSmsCode = async (params) => {
   smsVO.mobile = resetPasswordData.mobile
   await sendSmsCode(smsVO).then(async () => {
     message.success(t('login.SmsSendMsg'))
-    // 设置倒计时
+    // Set countdown
     mobileCodeTimer.value = 60
     let msgTimer = setInterval(() => {
       mobileCodeTimer.value = mobileCodeTimer.value - 1
@@ -244,7 +244,7 @@ const getTenantId = async () => {
   }
 }
 
-// 重置密码
+// Reset password
 const resetPassword = async () => {
   const data = await validForm()
   if (!data) return

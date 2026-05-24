@@ -2,6 +2,7 @@
   <Dialog v-model="dialogVisible" :title="dialogTitle">
     <el-form
       ref="formRef"
+      class="user-form"
       v-loading="formLoading"
       :model="formData"
       :rules="formRules"
@@ -29,26 +30,26 @@
       <el-row>
         <el-col :span="12">
           <el-form-item label="Phone" prop="mobile">
-            <el-input v-model="formData.mobile" maxlength="11" placeholder="Enter phone number码" />
+            <el-input v-model="formData.mobile" maxlength="11" placeholder="Enter phone number" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="Email" prop="email">
-            <el-input v-model="formData.email" maxlength="50" placeholder="Enter邮箱" />
+            <el-input v-model="formData.email" maxlength="50" placeholder="Enter email" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item v-if="formData.id === undefined" label="用户名称" prop="username">
-            <el-input v-model="formData.username" placeholder="Enter用户名称" />
+          <el-form-item v-if="formData.id === undefined" label="Username" prop="username">
+            <el-input v-model="formData.username" placeholder="Enter username" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item v-if="formData.id === undefined" label="用户密码" prop="password">
+          <el-form-item v-if="formData.id === undefined" label="Password" prop="password">
             <el-input
               v-model="formData.password"
-              placeholder="Enter用户密码"
+              placeholder="Enter password"
               show-password
               type="password"
             />
@@ -57,7 +58,7 @@
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="用户性别">
+          <el-form-item label="Gender">
             <el-select v-model="formData.sex" placeholder="Select">
               <el-option
                 v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
@@ -69,7 +70,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="岗位">
+          <el-form-item label="Position">
             <el-select v-model="formData.postIds" multiple placeholder="Select">
               <el-option
                 v-for="item in postList"
@@ -84,7 +85,7 @@
       <el-row>
         <el-col :span="24">
           <el-form-item label="Remark">
-            <el-input v-model="formData.remark" placeholder="Enter内容" type="textarea" />
+            <el-input v-model="formData.remark" placeholder="Enter remark" type="textarea" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -106,13 +107,13 @@ import { FormRules } from 'element-plus'
 
 defineOptions({ name: 'SystemUserForm' })
 
-const { t } = useI18n() // 国际化
-const message = useMessage() // 消息弹窗
+const { t } = useI18n() // I18n
+const message = useMessage() // Message popup
 
-const dialogVisible = ref(false) // 弹窗的是否展示
-const dialogTitle = ref('') // 弹窗的标题
-const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
-const formType = ref('') // 表单的类型：create - 新增；update - 修改
+const dialogVisible = ref(false) // Whether the dialog is visible
+const dialogTitle = ref('') // Dialog title
+const formLoading = ref(false) // Form loading state: 1) loading update data; 2) disabling submit button
+const formType = ref('') // Form type: create - add; update - edit
 const formData = ref({
   nickname: '',
   deptId: '',
@@ -146,17 +147,17 @@ const formRules = reactive<FormRules>({
     }
   ]
 })
-const formRef = ref() // 表单 Ref
-const deptList = ref<Tree[]>([]) // 树形结构
-const postList = ref([] as PostApi.PostVO[]) // 岗位列表
+const formRef = ref() // Form ref
+const deptList = ref<Tree[]>([]) // Tree structure
+const postList = ref([] as PostApi.PostVO[]) // Position list
 
-/** 打开弹窗 */
+/** Open dialog */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
   dialogTitle.value = t('action.' + type)
   formType.value = type
   resetForm()
-  // 修改时，设置数据
+  // Set data when editing
   if (id) {
     formLoading.value = true
     try {
@@ -165,21 +166,21 @@ const open = async (type: string, id?: number) => {
       formLoading.value = false
     }
   }
-  // 加载部门树
+  // Load department tree
   deptList.value = handleTree(await DeptApi.getSimpleDeptList())
-  // 加载岗位列表
+  // Load position list
   postList.value = await PostApi.getSimplePostList()
 }
-defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+defineExpose({ open }) // Expose open method for opening the dialog
 
-/** 提交表单 */
-const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
+/** Submit form */
+const emit = defineEmits(['success']) // Define success event for operation success callback
 const submitForm = async () => {
-  // 校验表单
+  // Validate form
   if (!formRef) return
   const valid = await formRef.value.validate()
   if (!valid) return
-  // 提交请求
+  // Submit request
   formLoading.value = true
   try {
     const data = formData.value as unknown as UserApi.UserVO
@@ -191,14 +192,14 @@ const submitForm = async () => {
       message.success(t('common.updateSuccess'))
     }
     dialogVisible.value = false
-    // 发送操作成功的事件
+    // Emit operation success event
     emit('success')
   } finally {
     formLoading.value = false
   }
 }
 
-/** 重置表单 */
+/** Reset form */
 const resetForm = () => {
   formData.value = {
     nickname: '',
@@ -217,3 +218,11 @@ const resetForm = () => {
   formRef.value?.resetFields()
 }
 </script>
+<style scoped>
+.user-form :deep(.el-input),
+.user-form :deep(.el-select),
+.user-form :deep(.el-tree-select),
+.user-form :deep(.el-textarea) {
+  width: 80%;
+}
+</style>

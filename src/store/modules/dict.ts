@@ -49,15 +49,15 @@ export const useDictStore = defineStore('dict', {
         if (!res || res.length === 0) {
           return
         }
-        // 设置数据
+        // Set data
         const dictDataMap = new Map<string, any>()
         res.forEach((dictData: DictDataVO) => {
-          // 获得 dictType 层级
+          // Get dictType level
           const enumValueObj = dictDataMap[dictData.dictType]
           if (!enumValueObj) {
             dictDataMap[dictData.dictType] = []
           }
-          // 处理 dictValue 层级
+          // Process dictValue level
           dictDataMap[dictData.dictType].push({
             value: dictData.value,
             label: dictData.label,
@@ -67,7 +67,7 @@ export const useDictStore = defineStore('dict', {
         })
         this.dictMap = dictDataMap
         this.isSetDict = true
-        wsCache.set(CACHE_KEY.DICT_CACHE, dictDataMap, { exp: 60 }) // 60 秒 过期
+        wsCache.set(CACHE_KEY.DICT_CACHE, dictDataMap, { exp: 60 }) // Expires in 60 seconds
       }
     },
     getDictByType(type: string) {
@@ -82,15 +82,15 @@ export const useDictStore = defineStore('dict', {
       if (!res || res.length === 0) {
         return
       }
-      // 设置数据
+      // Set data
       const dictDataMap = new Map<string, any>()
       res.forEach((dictData: DictDataVO) => {
-        // 获得 dictType 层级
+        // Get dictType level
         const enumValueObj = dictDataMap[dictData.dictType]
         if (!enumValueObj) {
           dictDataMap[dictData.dictType] = []
         }
-        // 处理 dictValue 层级
+        // Process dictValue level
         dictDataMap[dictData.dictType].push({
           value: dictData.value,
           label: dictData.label,
@@ -100,7 +100,7 @@ export const useDictStore = defineStore('dict', {
       })
       this.dictMap = dictDataMap
       this.isSetDict = true
-      wsCache.set(CACHE_KEY.DICT_CACHE, dictDataMap, { exp: 60 }) // 60 秒 过期
+      wsCache.set(CACHE_KEY.DICT_CACHE, dictDataMap, { exp: 60 }) // Expires in 60 seconds
     }
   }
 })

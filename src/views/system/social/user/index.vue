@@ -1,8 +1,8 @@
 <template>
-  <doc-alert title="三方登录" url="https://doc.iocoder.cn/social-user/" />
+  <doc-alert title="Social Login" url="https://doc.iocoder.cn/social-user/" />
 
   <ContentWrap>
-    <!-- 搜索工作栏 -->
+    <!-- Search toolbar -->
     <el-form
       ref="queryFormRef"
       :inline="true"
@@ -14,7 +14,7 @@
           v-model="queryParams.type"
           class="!w-240px"
           clearable
-          placeholder="Select社交平台"
+          placeholder="Select social platform"
         >
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_SOCIAL_TYPE)"
@@ -29,7 +29,7 @@
           v-model="queryParams.nickname"
           class="!w-240px"
           clearable
-          placeholder="Enter用户昵称"
+          placeholder="Enter user nickname"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -56,17 +56,17 @@
       <el-form-item>
         <el-button @click="handleQuery">
           <Icon class="mr-5px" icon="ep:search" />
-          搜索
+          Search
         </el-button>
         <el-button @click="resetQuery">
           <Icon class="mr-5px" icon="ep:refresh" />
-          重置
+          Reset
         </el-button>
       </el-form-item>
     </el-form>
   </ContentWrap>
 
-  <!-- 列表 -->
+  <!-- List -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :show-overflow-tooltip="true" :stripe="true">
       <el-table-column label="Platform" align="center" prop="type">
@@ -106,7 +106,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- 分页 -->
+    <!-- Pagination -->
     <Pagination
       v-model:limit="queryParams.pageSize"
       v-model:page="queryParams.pageNo"
@@ -115,7 +115,7 @@
     />
   </ContentWrap>
 
-  <!-- 表单弹窗：Detail -->
+  <!-- Detail dialog -->
   <SocialUserDetail ref="detailRef" />
 </template>
 
@@ -128,9 +128,9 @@ import { createImageViewer } from '@/components/ImageViewer'
 
 defineOptions({ name: 'SocialUser' })
 
-const loading = ref(true) // 列表的加载中
-const total = ref(0) // 列表的总页数
-const list = ref([]) // 列表的数据
+const loading = ref(true) // List loading state
+const total = ref(0) // Total list count
+const list = ref([]) // List data
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
@@ -139,9 +139,9 @@ const queryParams = reactive({
   nickname: undefined,
   createTime: []
 })
-const queryFormRef = ref() // 搜索的表单
+const queryFormRef = ref() // Search form
 
-/** 查询列表 */
+/** Query list */
 const getList = async () => {
   loading.value = true
   try {
@@ -153,13 +153,13 @@ const getList = async () => {
   }
 }
 
-/** 搜索按钮操作 */
+/** Search button action */
 const handleQuery = () => {
   queryParams.pageNo = 1
   getList()
 }
 
-/** 重置按钮操作 */
+/** Reset button action */
 const resetQuery = () => {
   queryFormRef.value.resetFields()
   handleQuery()
@@ -171,13 +171,13 @@ const imagePreview = (imgUrl: string) => {
   })
 }
 
-/** Detail操作 */
+/** Detail action */
 const detailRef = ref()
 const openDetail = (id: number) => {
   detailRef.value.open(id)
 }
 
-/** 初始化 **/
+/** Initialize */
 onMounted(() => {
   getList()
 })

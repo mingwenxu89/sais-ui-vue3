@@ -39,7 +39,7 @@ const layout = computed(() => appStore.getLayout)
 // 消息图标
 const message = computed(() => appStore.getMessage)
 
-// 租户切换权限
+// Tenant switch permission
 const hasTenantVisitPermission = computed(
   () => import.meta.env.VITE_APP_TENANT_ENABLE === 'true' && checkPermi(['system:tenant:visit'])
 )

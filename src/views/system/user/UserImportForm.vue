@@ -22,7 +22,7 @@
             <el-checkbox v-model="updateSupport" />
             Update existing user data
           </div>
-          <span>仅允许导入 xls、xlsx 格式文件。</span>
+          <span>Only xls and xlsx files can be imported.</span>
           <el-link
             :underline="false"
             style="font-size: 12px; vertical-align: baseline"
@@ -47,33 +47,33 @@ import download from '@/utils/download'
 
 defineOptions({ name: 'SystemUserImportForm' })
 
-const message = useMessage() // 消息弹窗
+const message = useMessage() // Message popup
 
-const dialogVisible = ref(false) // 弹窗的是否展示
-const formLoading = ref(false) // 表单的加载中
+const dialogVisible = ref(false) // Whether the dialog is visible
+const formLoading = ref(false) // Form loading state
 const uploadRef = ref()
 const importUrl =
   import.meta.env.VITE_BASE_URL + import.meta.env.VITE_API_URL + '/system/user/import'
-const uploadHeaders = ref() // 上传 Header 头
-const fileList = ref([]) // 文件列表
+const uploadHeaders = ref() // Upload headers
+const fileList = ref([]) // File list
 const updateSupport = ref(0) // Update existing user data
 
-/** 打开弹窗 */
+/** Open dialog */
 const open = () => {
   dialogVisible.value = true
   updateSupport.value = 0
   fileList.value = []
   resetForm()
 }
-defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+defineExpose({ open }) // Expose open method for opening the dialog
 
-/** 提交表单 */
+/** Submit form */
 const submitForm = async () => {
   if (fileList.value.length == 0) {
     message.error('Please upload a file')
     return
   }
-  // 提交请求
+  // Submit request
   uploadHeaders.value = {
     Authorization: 'Bearer ' + getAccessToken(),
     'tenant-id': getTenantId()
@@ -82,7 +82,7 @@ const submitForm = async () => {
   uploadRef.value!.submit()
 }
 
-/** 文件上传成功 */
+/** File upload success */
 const emits = defineEmits(['success'])
 const submitFormSuccess = (response: any) => {
   if (response.code !== 0) {
@@ -90,7 +90,7 @@ const submitFormSuccess = (response: any) => {
     resetForm()
     return
   }
-  // 拼接提示语
+  // Build message text
   const data = response.data
   let text = 'Upload success: ' + data.createUsernames.length + ';'
   for (let username of data.createUsernames) {
@@ -107,32 +107,32 @@ const submitFormSuccess = (response: any) => {
   message.alert(text)
   formLoading.value = false
   dialogVisible.value = false
-  // 发送操作成功的事件
+  // Emit operation success event
   emits('success')
 }
 
-/** 上传错误提示 */
+/** Upload error message */
 const submitFormError = (): void => {
   message.error('Upload failed, please try again!')
   formLoading.value = false
 }
 
-/** 重置表单 */
+/** Reset form */
 const resetForm = async (): Promise<void> => {
-  // 重置上传状态和文件
+  // Reset upload state and files
   formLoading.value = false
   await nextTick()
   uploadRef.value?.clearFiles()
 }
 
-/** 文件数超出提示 */
+/** File count exceeded message */
 const handleExceed = (): void => {
   message.error('Only one file can be uploaded!')
 }
 
-/** Download Template操作 */
+/** Download template action */
 const importTemplate = async () => {
   const res = await UserApi.importUserTemplate()
-  download.excel(res, '用户导入模版.xls')
+  download.excel(res, 'user-import-template.xls')
 }
 </script>
