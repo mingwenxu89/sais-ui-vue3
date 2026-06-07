@@ -126,7 +126,7 @@
                 <span class="text-xs text-gray-400">{{ selectedField?.area }} acres</span>
                 <span v-if="currentCropPlan" class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">
                   🌾 {{ currentCropPlan.cropName }}
-                  <span class="text-green-500 font-normal ml-1">{{ currentCropPlan.startDate }} → {{ currentCropPlan.endDate }}</span>
+                  <span class="text-green-500 font-normal ml-1">{{ currentCropPlan.startDate }} ~ {{ currentCropPlan.endDate }}</span>
                 </span>
                 <el-button
                   v-if="!currentCropPlan"
@@ -522,7 +522,7 @@ const initMap = () => {
   })
 
 
-  // Address search box — use nextTick to ensure the v-if element is in the DOM
+  // Address search box - use nextTick to ensure the v-if element is in the DOM
   nextTick(() => {
     const input = document.getElementById('field-address-search') as HTMLInputElement | null
     if (!input) return

@@ -44,7 +44,7 @@
             </div>
           </div>
         </div>
-        <div v-else-if="weatherLoading" class="text-sm text-gray-400 px-2">Loading weather…</div>
+        <div v-else-if="weatherLoading" class="text-sm text-gray-400 px-2">Loading weather...</div>
       </div>
     </div>
 
@@ -113,7 +113,7 @@
               </div>
               <div v-if="cropPlanMap[field.id!]" class="text-xs text-green-600 mb-1.5 truncate">
                 🌾 {{ cropPlanMap[field.id!].cropName }}
-                <span class="text-gray-400 ml-1">→ {{ cropPlanMap[field.id!].endDate }}</span>
+                <span class="text-gray-400 ml-1">~ {{ cropPlanMap[field.id!].endDate }}</span>
               </div>
               <div v-else class="text-xs text-gray-400 mb-1.5">No crop plan</div>
               <div class="flex items-center">

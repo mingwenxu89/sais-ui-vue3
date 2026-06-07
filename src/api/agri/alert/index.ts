@@ -1,6 +1,6 @@
 import request from '@/config/axios'
 
-/** 告警信息 VO — matches AlertRespVO on the backend */
+/** 告警信息 VO - matches AlertRespVO on the backend */
 export interface AlertVO {
   id?: number
   farmId?: number

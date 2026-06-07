@@ -24,13 +24,13 @@
       <el-form-item label="Soil Moisture (%)" prop="soilMoisture">
         <el-input-number v-model="formData.soilMoisture" :precision="2" placeholder="Enter soil moisture" />
       </el-form-item>
-      <el-form-item label="Soil Temp (℃)" prop="soilTemperature">
+      <el-form-item label="Soil Temp (°C)" prop="soilTemperature">
         <el-input-number v-model="formData.soilTemperature" :precision="2" placeholder="Enter soil temperature" />
       </el-form-item>
       <el-form-item label="Soil pH" prop="soilPh">
         <el-input-number v-model="formData.soilPh" :precision="2" placeholder="Enter soil pH" />
       </el-form-item>
-      <el-form-item label="Air Temp (℃)" prop="airTemperature">
+      <el-form-item label="Air Temp (°C)" prop="airTemperature">
         <el-input-number v-model="formData.airTemperature" :precision="2" placeholder="Enter air temperature" />
       </el-form-item>
       <el-form-item label="Air Humidity (%)" prop="airHumidity">
